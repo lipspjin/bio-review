@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 初中地理中考复习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #e8f5e9 100%);
+    min-height: 100vh; padding: 20px;
+  }
+  .app {
+    max-width: 900px; margin: 0 auto;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(12px);
+    border-radius: 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    padding: 24px 28px 32px;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .header h1 {
+    font-size: 26px; font-weight: 700;
+    background: linear-gradient(135deg, #1565c0, #42a5f5);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: 1px;
+  }
+  .header .score { font-size:15px; color:#555; background:#eef4fa; padding:6px 16px; border-radius:30px; display:flex; align-items:center; gap:6px; }
+  .header .score strong { color:#1565c0; font-size:18px; }
+  .reset-btn { background:#fff; border:2px solid #ef5350; color:#c62828; padding:5px 14px; border-radius:20px; cursor:pointer; font-size:13px; font-weight:500; transition:all 0.3s; white-space:nowrap; }
+  .reset-btn:hover { background:#ffebee; transform:scale(1.03); }
+
+  .tabs { display:flex; gap:6px; flex-wrap:nowrap; overflow-x:auto; margin-bottom:16px; border-bottom:2px solid #e3edf5; padding-bottom:2px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab { padding:8px 16px; cursor:pointer; border-radius:20px 20px 0 0; font-size:14px; font-weight:500; color:#666; transition:all 0.3s; background:transparent; border:none; position:relative; user-select:none; white-space:nowrap; flex-shrink:0; }
+  .tab:hover { color:#1565c0; background:#eef4fa; }
+  .tab.active { color:#0d47a1; background:#e3f2fd; font-weight:600; }
+  .tab.active::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:3px; background:#1e88e5; border-radius:3px 3px 0 0; }
+  .tab .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+  .dot.done { background:#43a047; } .dot.partial { background:#ffa726; } .dot.none { background:#bdbdbd; }
+
+  .content { min-height:400px; }
+
+  .overview-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; margin-top:8px; }
+  .overview-card { background:#f8faff; border-radius:16px; padding:18px 16px 16px; border:1px solid #dde8f5; cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; overflow:hidden; }
+  .overview-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,0.06); }
+  .overview-card .card-icon { font-size:32px; margin-bottom:6px; }
+  .overview-card h3 { font-size:16px; color:#0d47a1; margin-bottom:4px; }
+  .overview-card p { font-size:13px; color:#777; margin-bottom:10px; line-height:1.4; }
+  .overview-card .bar-wrap { height:6px; background:#dde8f5; border-radius:3px; overflow:hidden; }
+  .overview-card .bar { height:100%; border-radius:3px; transition:width 0.8s ease; background:linear-gradient(90deg,#42a5f5,#1e88e5); }
+  .overview-card .bar-label { font-size:12px; color:#888; margin-top:4px; display:flex; justify-content:space-between; }
+
+  .topic-content { display:none; }
+  .topic-content.active { display:block; animation:slideIn 0.4s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+  .topic-content h2 { font-size:22px; color:#0d47a1; margin:8px 0 14px; display:flex; align-items:center; gap:10px; }
+  .topic-content h2 small { font-size:14px; font-weight:400; color:#888; }
+
+  .knowledge-card { background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:14px; border:1px solid #dde8f5; }
+  .knowledge-card .k-title { font-weight:600; font-size:15px; color:#1565c0; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .knowledge-card .k-title .num { background:#e3f2fd; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; color:#1565c0; flex-shrink:0; }
+  .knowledge-card .k-body { font-size:14px; color:#444; line-height:1.7; }
+  .knowledge-card .k-body .highlight { background:#fff8e1; padding:0 4px; border-radius:3px; font-weight:500; color:#e65100; }
+  .knowledge-card .k-body .tag { display:inline-block; background:#e3f2fd; color:#1565c0; font-size:12px; padding:2px 8px; border-radius:10px; margin:2px; }
+
+  .svg-illustration { display:flex; justify-content:center; margin:10px 0 16px; background:#f5faff; border-radius:12px; padding:12px; border:1px dashed #bbdefb; }
+  .svg-illustration svg { max-width:100%; height:auto; }
+
+  .anim-btn { padding:6px 18px; border:none; background:#1e88e5; color:#fff; border-radius:20px; cursor:pointer; font-size:13px; transition:background 0.3s; }
+  .anim-btn:hover { background:#1565c0; }
+
+  .quiz-section { margin-top:20px; padding-top:16px; border-top:2px dashed #bbdefb; }
+  .quiz-section h3 { font-size:17px; color:#0d47a1; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .quiz-card { background:#f8faff; border-radius:14px; padding:16px 18px; border:1px solid #dde8f5; margin-bottom:12px; }
+  .quiz-card .q-text { font-size:15px; font-weight:500; color:#333; margin-bottom:10px; line-height:1.6; }
+  .quiz-options { display:flex; flex-direction:column; gap:8px; }
+  .quiz-opt { padding:10px 14px; border-radius:10px; cursor:pointer; border:2px solid #e0e0e0; font-size:14px; transition:all 0.25s; display:flex; align-items:center; gap:8px; background:#fff; user-select:none; }
+  .quiz-opt:hover { border-color:#90caf9; background:#e3f2fd; }
+  .quiz-opt.correct { border-color:#43a047; background:#e8f5e9; }
+  .quiz-opt.correct::after { content:' ✓'; color:#2e7d32; font-weight:bold; margin-left:auto; }
+  .quiz-opt.wrong { border-color:#ef5350; background:#ffebee; }
+  .quiz-opt.wrong::after { content:' ✗'; color:#c62828; font-weight:bold; margin-left:auto; }
+  .quiz-opt.disabled { pointer-events:none; }
+  .quiz-result { margin-top:8px; font-size:14px; padding:8px 12px; border-radius:8px; display:none; }
+  .quiz-result.show { display:block; animation:fadeIn 0.3s ease; }
+  .quiz-result.correct { background:#e8f5e9; color:#2e7d32; }
+  .quiz-result.wrong { background:#ffebee; color:#c62828; }
+
+  .practice-panel { display:none; }
+  .practice-panel.active { display:block; animation:slideIn 0.4s ease; }
+  .practice-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+  .practice-header .p-info { font-size:14px; color:#666; }
+  .practice-header .p-info strong { color:#1565c0; font-size:18px; }
+  .practice-header .p-progress { height:4px; background:#dde8f5; border-radius:2px; flex:1; min-width:80px; margin:0 16px; }
+  .practice-header .p-progress .fill { height:100%; background:linear-gradient(90deg,#42a5f5,#1e88e5); border-radius:2px; transition:width 0.5s ease; width:0%; }
+  .back-btn { padding:6px 14px; border:1px solid #bbdefb; background:#fff; border-radius:20px; cursor:pointer; font-size:13px; color:#555; transition:all 0.3s; }
+  .back-btn:hover { background:#e3f2fd; color:#1565c0; }
+
+  .empty-state { text-align:center; padding:40px 20px; color:#999; }
+  .empty-state .big-icon { font-size:48px; margin-bottom:12px; }
+
+  @media (max-width:768px) {
+    body { padding:10px; }
+    .app { padding:14px; border-radius:18px; }
+    .header { flex-direction:column; align-items:flex-start; gap:8px; }
+    .header h1 { font-size:20px; }
+    .header .score { font-size:14px; padding:5px 14px; }
+    .tabs { gap:4px; padding-bottom:4px; }
+    .tab { font-size:13px; padding:7px 12px; }
+    .overview-grid { grid-template-columns:1fr; }
+    .overview-card { padding:14px; }
+    .overview-card .card-icon { font-size:28px; }
+    .knowledge-card { padding:12px 14px; }
+    .knowledge-card .k-title { font-size:14px; }
+    .knowledge-card .k-body { font-size:13px; line-height:1.65; }
+    .quiz-card .q-text { font-size:15px; }
+    .quiz-opt { padding:12px 14px; font-size:14px; min-height:44px; }
+    .practice-header .p-info { font-size:13px; }
+    .practice-header .p-progress { min-width:60px; margin:0 8px; }
+    .svg-illustration { padding:8px; }
+    .svg-illustration svg { max-height:150px; }
+    .anim-btn { font-size:14px; padding:9px 24px; }
+  }
+  @media (max-width:400px) {
+    .app { padding:10px; border-radius:14px; }
+    .header h1 { font-size:17px; }
+    .tab { font-size:12px; padding:6px 10px; }
+    .knowledge-card .k-body { font-size:12px; }
+    .quiz-card .q-text { font-size:14px; }
+    .quiz-opt { padding:10px 12px; font-size:13px; min-height:40px; }
+    .overview-card h3 { font-size:14px; }
+    .overview-card p { font-size:12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>🌍 初中地理中考复习</h1>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="score">🏆 掌握 <strong id="totalScore">0</strong>%</div>
+      <button class="reset-btn" onclick="resetAll()">🔄 重新学习</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">📊 总览</button>
+    <button class="tab" data-tab="topic0"><span class="dot none"></span>地球与地图</button>
+    <button class="tab" data-tab="topic1"><span class="dot none"></span>世界地理</button>
+    <button class="tab" data-tab="topic2"><span class="dot none"></span>中国自然地理</button>
+    <button class="tab" data-tab="topic3"><span class="dot none"></span>中国经济地理</button>
+    <button class="tab" data-tab="topic4"><span class="dot none"></span>区域地理</button>
+    <button class="tab" data-tab="topic5"><span class="dot none"></span>热点与技能</button>
+  </div>
+
+  <div class="content">
+    <div class="topic-content active" id="page-overview">
+      <h2>📋 学习总览</h2>
+      <p style="color:#666;margin-bottom:16px;">点击卡片进入对应章节学习，完成练习后状态自动保存 ✨</p>
+      <div class="overview-grid" id="overviewGrid"></div>
+      <div style="margin-top:20px;text-align:center;">
+        <button class="anim-btn" onclick="startPractice()" style="font-size:15px;padding:10px 32px;border-radius:30px;">📝 综合练习</button>
+      </div>
+    </div>
+    <div id="topicPages"></div>
+    <div class="practice-panel" id="practicePanel">
+      <div class="practice-header">
+        <div><span class="back-btn" onclick="exitPractice()">← 返回</span></div>
+        <div class="p-info">第 <strong id="pCur">1</strong> / <span id="pTotal">10</span> 题</div>
+        <div class="p-progress"><div class="fill" id="pFill"></div></div>
+        <div class="p-info" id="pScoreDisplay">✅ 0</div>
+      </div>
+      <div id="practiceContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOPICS = [
+  // ═══ 地球与地图 ═══
+  {
+    id: 'topic0', icon: '🌐', title: '地球与地图',
+    desc: '经纬网、半球划分、地图三要素、等高线',
+    points: [
+      { title: '经纬网', body: '<span class="tag">经线</span> 连接南北两极，等长，指示南北方向<br><span class="tag">纬线</span> 与赤道平行，不等长，赤道最长，指示东西方向<br>📌 <span class="highlight">0°经线</span>（本初子午线）经过英国格林尼治天文台<br>📌 <span class="highlight">0°纬线</span>（赤道）南北半球分界，南北纬各90°' },
+      { title: '半球划分', body: '<strong>南北半球</strong>：赤道为界<br><strong>东西半球</strong>：<span class="highlight">20°W 和 160°E</span> 组成的经线圈<br>🎯 口诀：<span class="highlight">"小小为东，大大为西"</span><br>即：东半球范围 20°W→0°→160°E；西半球 160°E→180°→20°W' },
+      { title: '地图三要素', body: '① <span class="tag">比例尺</span> = 图上距离 / 实地距离<br>　分母越大 → 比例尺越小 → 表示范围越大 → 内容越简略<br>② <span class="tag">方向</span>：一般"上北下南左西右东"；有指向标按指向标<br>③ <span class="tag">图例和注记</span>' },
+      { title: '等高线', body: '<span class="highlight">密集</span> → 坡度陡<br><span class="highlight">稀疏</span> → 坡度缓<br>闭合中心高 → <strong>山峰</strong><br>闭合中心低 → <strong>盆地</strong><br>等高线向低值凸 → <strong>山脊</strong>（分水岭）<br>等高线向高值凸 → <strong>山谷</strong>（易发育河流）' },
+    ],
+    quiz: [
+      { q: '0°经线又被称为什么？', opts: ['赤道', '本初子午线', '回归线', '极圈'], ans: 1 },
+      { q: '东西半球的分界线是什么？', opts: ['0°和180°', '20°W和160°E', '赤道', '20°E和160°W'], ans: 1 },
+      { q: '比例尺越大，表示的地图内容？', opts: ['越简略', '越详细', '范围越大', '无变化'], ans: 1 },
+      { q: '等高线密集的地方表示？', opts: ['坡度缓', '坡度陡', '海拔低', '地形平坦'], ans: 1 },
+      { q: '下列哪条经线位于东半球？', opts: ['20°W', '170°E', '30°W', '180°'], ans: 0 },
+      { q: '赤道以北的纬度称为？', opts: ['南纬', '北纬', '东经', '西经'], ans: 1 },
+      { q: '等高线向海拔低处凸出的地形部位是？', opts: ['山谷', '山脊', '陡崖', '鞍部'], ans: 1 },
+    ]
+  },
+  // ═══ 世界地理 ═══
+  {
+    id: 'topic1', icon: '🌏', title: '世界地理',
+    desc: '大洲大洋、板块构造、气候类型、人口人种',
+    points: [
+      { title: '大洲与大洋', body: '七大洲（面积从大到小）：<span class="highlight">亚非北南美，南极欧大洋</span><br>四大洋（面积从大到小）：<span class="highlight">太平洋、大西洋、印度洋、北冰洋</span><br>🌏 亚洲与欧洲分界：乌拉尔山—乌拉尔河—大高加索山<br>🌏 亚洲与非洲分界：苏伊士运河<br>🌏 南美洲与北美洲分界：巴拿马运河' },
+      { title: '板块构造', body: '六大板块：亚欧板块、非洲板块、印度洋板块、太平洋板块、美洲板块、南极洲板块<br>板块 <span class="highlight">交界处</span> 地壳活跃 → 多火山地震<br>🔥 环太平洋火山地震带、地中海—喜马拉雅火山地震带<br>板块张裂 → 裂谷/海洋（如东非大裂谷）<br>板块碰撞 → 山脉（如喜马拉雅山）' },
+      { title: '主要气候类型', body: '<span class="tag">热带</span> 雨林（赤道附近）、草原（干湿季）、沙漠（南北回归线大陆西岸/内部）、季风（南亚东南亚）<br><span class="tag">温带</span> 季风（中国东部）、海洋性（西欧）、<span class="highlight">地中海（夏干冬雨）</span>、大陆性（内陆温差大）<br><span class="tag">寒带</span> 苔原、冰原<br>💡 气候两大要素：<strong>气温和降水</strong>' },
+      { title: '人口与人种', body: '人口密集区：亚洲东部、亚洲南部、欧洲西部、北美洲东部<br>📌 <span class="tag">白种人</span> 欧洲、美洲、西亚、北非<br>📌 <span class="tag">黄种人</span> 东亚、东南亚<br>📌 <span class="tag">黑种人</span> 撒哈拉以南非洲' },
+    ],
+    quiz: [
+      { q: '面积最大的大洲是？', opts: ['非洲', '亚洲', '北美洲', '南美洲'], ans: 1 },
+      { q: '亚洲和非洲的分界线是？', opts: ['巴拿马运河', '苏伊士运河', '乌拉尔山', '白令海峡'], ans: 1 },
+      { q: '地中海气候的特征是？', opts: ['全年高温多雨', '夏季炎热干燥、冬季温和多雨', '全年温和湿润', '夏季高温多雨、冬季寒冷干燥'], ans: 1 },
+      { q: '环太平洋火山地震带形成的主要原因是？', opts: ['板块张裂', '板块碰撞挤压', '人类活动', '海浪侵蚀'], ans: 1 },
+      { q: '撒哈拉以南非洲的主要人种是？', opts: ['白种人', '黄种人', '黑种人', '混血人种'], ans: 2 },
+      { q: '世界面积最大的大洋是？', opts: ['大西洋', '太平洋', '印度洋', '北冰洋'], ans: 1 },
+      { q: '喜马拉雅山的形成是由于？', opts: ['板块张裂', '板块碰撞挤压', '火山喷发', '流水沉积'], ans: 1 },
+    ]
+  },
+  // ═══ 中国自然地理 ═══
+  {
+    id: 'topic2', icon: '🏔️', title: '中国自然地理',
+    desc: '地势阶梯、气候、河流、自然资源',
+    points: [
+      { title: '地势三级阶梯', body: '<span class="highlight">西高东低，呈三级阶梯分布</span><br>🥇 第一级：<strong>青藏高原</strong>（平均海拔4000m+）<br>🥈 第二级：高原和盆地（1000-2000m）<br>🥉 第三级：平原和丘陵（500m以下）<br>📌 分界线：昆仑山—祁连山—横断山 / 大兴安岭—太行山—巫山—雪峰山' },
+      { title: '气候特征', body: '<strong>季风气候显著</strong>：夏季高温多雨，冬季寒冷干燥<br>📌 最重要的地理分界线——<span class="highlight">秦岭—淮河一线</span><br>🔹 1月0°C等温线 🔹 800mm等降水量线<br>🔹 亚热带/暖温带分界 🔹 水田/旱地分界<br>💡 东部季风区 vs 西北非季风区（以大兴安岭—阴山—贺兰山为界）' },
+      { title: '河流', body: '<span class="tag">长江</span> 中国最长、水量最大<br>上中下游分界：<strong>宜昌、湖口</strong><br>水能集中在上游（三峡、葛洲坝）<br><span class="tag">黄河</span> 含沙量大，"地上河"在下游<br>📌 黄河治理关键：中游黄土高原 <span class="highlight">水土保持</span>' },
+      { title: '自然资源', body: '水资源：<span class="highlight">南多北少</span> → 南水北调工程<br>耕地：<span class="highlight">东多西少</span>，南方水田北方旱地<br>能源：煤炭（山西、陕西）、石油（大庆、胜利）<br>📌 西气东输：将西部天然气输送到东部地区' },
+    ],
+    quiz: [
+      { q: '我国地势第二级阶梯的主要地形类型是？', opts: ['平原和丘陵', '高原和盆地', '山地和高原', '平原和盆地'], ans: 1 },
+      { q: '秦岭—淮河一线大致与哪条等降水量线吻合？', opts: ['200mm', '400mm', '800mm', '1600mm'], ans: 2 },
+      { q: '长江的水能资源主要集中在哪个河段？', opts: ['上游', '中游', '下游', '全流域'], ans: 0 },
+      { q: '黄河"地上河"出现在哪个河段？', opts: ['上游', '中游', '下游', '源头段'], ans: 2 },
+      { q: '我国水资源分布的特点是？', opts: ['北多南少', '南多北少', '东少西多', '均匀分布'], ans: 1 },
+      { q: '我国1月0°C等温线大致经过？', opts: ['长城一线', '秦岭—淮河一线', '南岭一线', '天山—阴山一线'], ans: 1 },
+      { q: '黄河含沙量最大的河段是？', opts: ['上游', '中游', '下游', '河口段'], ans: 1 },
+    ]
+  },
+  // ═══ 中国经济地理 ═══
+  {
+    id: 'topic3', icon: '🏭', title: '中国经济地理',
+    desc: '农业分布、工业基地、交通运输',
+    points: [
+      { title: '农业分布', body: '东耕西牧——以 <span class="highlight">400mm 等降水量线</span> 为界<br>🌾 南稻北麦（秦岭—淮河为界）<br>🍬 南甘北甜（甘蔗南方 / 甜菜北方）<br>🫘 南油北豆（油菜南方 / 大豆北方）<br>🍵 主要经济作物：棉花（新疆、黄河流域、长江流域）' },
+      { title: '四大工业基地', body: '① <span class="tag">辽中南</span> 重工业基地（煤铁资源丰富）<br>② <span class="tag">京津唐</span> 北方最大综合性工业基地<br>③ <span class="tag">沪宁杭</span> 全国最大综合性工业基地<br>④ <span class="tag">珠三角</span> 轻工业基地，外向型经济<br>💡 沿海分布：四大基地均位于东部沿海地区' },
+      { title: '交通运输', body: '铁路干线：<span class="highlight">"五纵三横"</span><br>🚄 南北向（五纵）：京沪线、京九线、京广线、焦柳线、宝成—成昆线<br>🚄 东西向（三横）：<span class="highlight">陇海—兰新线</span>、沪昆线、京包—包兰线<br>📌 重要枢纽：<strong>郑州</strong>（京广+陇海）、<strong>徐州</strong>（京沪+陇海）、<strong>株洲</strong>（京广+沪昆）' },
+    ],
+    quiz: [
+      { q: '我国南北方农业以什么为界？', opts: ['长城', '秦岭—淮河', '长江', '南岭'], ans: 1 },
+      { q: '北方地区的主要粮食作物是？', opts: ['水稻', '小麦', '玉米', '高粱'], ans: 1 },
+      { q: '我国最大的综合性工业基地是？', opts: ['辽中南', '京津唐', '沪宁杭', '珠三角'], ans: 2 },
+      { q: '陇海线和京广线交汇的铁路枢纽是？', opts: ['北京', '郑州', '徐州', '西安'], ans: 1 },
+      { q: '我国南方主要的糖料作物是？', opts: ['甜菜', '甘蔗', '棉花', '油菜'], ans: 1 },
+      { q: '四大工业基地共同的位置特点是？', opts: ['沿长江分布', '沿铁路线分布', '沿海分布', '沿边境分布'], ans: 2 },
+      { q: '京沪线和陇海线交汇的枢纽是？', opts: ['郑州', '徐州', '南京', '济南'], ans: 1 },
+    ]
+  },
+  // ═══ 区域地理 ═══
+  {
+    id: 'topic4', icon: '🗺️', title: '区域地理',
+    desc: '北方/南方/西北/青藏/港澳台',
+    points: [
+      { title: '北方地区', body: '🌲 温带季风气候，<span class="highlight">旱地</span>农业<br>主要农作物：小麦、玉米、大豆、甜菜<br>煤铁石油资源丰富：山西煤炭、大庆油田、鞍山铁矿<br>主要环境问题：<span class="highlight">水资源短缺</span>、水土流失' },
+      { title: '南方地区', body: '🌴 亚热带/热带季风气候，<span class="highlight">水田</span>农业<br>主要农作物：水稻、油菜、甘蔗、茶叶<br>有色金属丰富：江西铜矿、湖南锑矿、云南锡矿<br>主要环境问题：<span class="highlight">洪涝灾害</span>、酸雨' },
+      { title: '西北地区', body: '🏜️ 干旱为主，年降水量 < 400mm<br>畜牧业 + <span class="highlight">绿洲农业</span>（天山山麓、河西走廊）<br>主要环境问题：<span class="highlight">荒漠化</span>、土地盐碱化<br>💡 塔里木盆地—我国最大盆地，塔克拉玛干沙漠' },
+      { title: '青藏地区', body: '🏔️ 高寒气候，"<span class="highlight">高寒</span>"两大特征<br><span class="tag">河谷农业</span> 雅鲁藏布江谷地、湟水谷地<br>主要牲畜：<strong>牦牛</strong>（高原之舟）、藏绵羊<br>主要能源：太阳能、地热能、水能<br>📌 三江源：长江、黄河、澜沧江的源头' },
+      { title: '港澳台', body: '🇭🇰 <strong>香港</strong>：转口贸易、金融中心<br>🇲🇴 <strong>澳门</strong>：博彩旅游业<br>🇹🇼 <strong>台湾</strong>："进口—加工—出口"型经济<br>主要城市：台北、高雄、台中<br>主要物产：樟脑、茶叶、菠萝、香蕉' },
+    ],
+    quiz: [
+      { q: '北方地区主要的耕地类型是？', opts: ['水田', '旱地', '草地', '林地'], ans: 1 },
+      { q: '青藏地区特有的牲畜是？', opts: ['骆驼', '牦牛', '绵羊', '马'], ans: 1 },
+      { q: '西北地区主要的农业类型是？', opts: ['水田农业', '旱地农业', '绿洲农业', '热带种植园'], ans: 2 },
+      { q: '香港主要的经济特征是？', opts: ['博彩旅游', '重工业', '转口贸易和金融', '石油开采'], ans: 2 },
+      { q: '三江源自然保护区的"三江"不包括？', opts: ['长江', '黄河', '珠江', '澜沧江'], ans: 2 },
+      { q: '台湾的经济类型是？', opts: ['原料出口型', '进口—加工—出口型', '单一农业型', '石油出口型'], ans: 1 },
+      { q: '南方地区的有色金属中，江西以什么闻名？', opts: ['锑矿', '锡矿', '铜矿', '铝土矿'], ans: 2 },
+    ]
+  },
+  // ═══ 热点与技能 ═══
+  {
+    id: 'topic5', icon: '🔍', title: '热点与技能',
+    desc: '地球运动、气温降水图判读、地理计算',
+    points: [
+      { title: '地球运动', body: '<span class="tag">自转</span> 绕地轴自西向东旋转，周期约24小时<br>→ 产生 <span class="highlight">昼夜交替</span> 和 <span class="highlight">时差</span><br><span class="tag">公转</span> 绕太阳自西向东，周期一年<br>→ 产生 <span class="highlight">四季更替</span> 和 <span class="highlight">五带划分</span><br>📌 6月22日前后 → <strong>夏至</strong>，白昼最长，太阳直射北回归线<br>📌 12月22日前后 → <strong>冬至</strong>，白昼最短' },
+      { title: '气温降水图判读', body: '☀️ <span class="highlight">雨热同期</span> → 季风气候（夏季高温多雨）<br>☀️ <span class="highlight">冬雨型</span> → 地中海气候（冬雨夏干）<br>☀️ <span class="highlight">全年多雨</span> → 热带雨林气候<br>☀️ <span class="highlight">全年少雨</span> → 沙漠气候<br>💡 判断步骤：看气温定半球 → 看最冷月气温定温度带 → 看降水定类型' },
+      { title: '地理计算', body: '📐 <span class="tag">比例尺计算</span>：实地距离 = 图上距离 ÷ 比例尺<br>📐 <span class="tag">相对高度</span>：两地海拔之差<br>📐 <span class="tag">时区计算</span>：东加西减（每15°差1小时）<br>📐 <span class="tag">温差计算</span>：海拔每升高100m，气温下降约0.6°C' },
+    ],
+    quiz: [
+      { q: '地球自转产生的现象是？', opts: ['四季更替', '昼夜交替', '五带划分', '昼夜长短变化'], ans: 1 },
+      { q: '北半球夏至日，太阳直射哪条纬线？', opts: ['赤道', '北回归线', '南回归线', '北极圈'], ans: 1 },
+      { q: '海拔每升高100米，气温大约下降多少？', opts: ['0.3°C', '0.6°C', '1°C', '6°C'], ans: 1 },
+      { q: '当北京时间（东八区）为12:00时，伦敦（0时区）的时间是？', opts: ['20:00', '4:00', '12:00', '0:00'], ans: 1 },
+      { q: '雨热同期的气候类型常见于？', opts: ['地中海气候', '温带海洋性气候', '季风气候', '热带沙漠气候'], ans: 2 },
+      { q: '太阳直射南回归线时，北半球的节气是？', opts: ['春分', '夏至', '秋分', '冬至'], ans: 3 },
+      { q: '地球上五带划分的依据是？', opts: ['海陆位置', '地形高低', '获得太阳热量的多少', '降水多少'], ans: 2 },
+    ]
+  },
+];
+
+// ═══════════════ 状态管理 ═══════════════
+function getProgress() { try { const d = localStorage.getItem('geoReviewProgress'); return d ? JSON.parse(d) : {}; } catch(e) { return {}; } }
+function saveProgress(p) { try { localStorage.setItem('geoReviewProgress', JSON.stringify(p)); } catch(e) {} }
+
+function topicState(tid) {
+  const p = getProgress(); const key = tid;
+  if (!p[key]) p[key] = { done: false, correct: 0, total: 0, answers: [] };
+  return p[key];
+}
+
+function updateTopicProgress(tid, correct, total, answers) {
+  const p = getProgress(); const key = tid;
+  p[key] = { done: correct === total, correct, total, answers };
+  saveProgress(p); renderAll();
+}
+
+function getTotalProgress() {
+  const p = getProgress(); let totalQ = 0, totalC = 0;
+  TOPICS.forEach(t => {
+    const total = t.quiz.length; const correct = p[t.id] ? p[t.id].correct : 0;
+    totalQ += total; totalC += correct;
+  });
+  return { correct: totalC, total: totalQ, pct: totalQ ? Math.round(totalC/totalQ*100) : 0 };
+}
+
+// ═══════════════ 渲染 ═══════════════
+function renderAll() {
+  const ae = document.querySelector('.topic-content.active');
+  const aid = ae ? ae.id : null;
+  renderOverview(); renderTopicPages(); updateTabsDots(); updateTotalScore();
+  if (aid && aid !== 'page-overview') { const p = document.getElementById(aid); if (p) p.classList.add('active'); }
+}
+
+function renderOverview() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = TOPICS.map(t => {
+    const st = topicState(t.id); const total = t.quiz.length; const correct = st.correct || 0;
+    const pct = Math.round(correct/total*100);
+    return `<div class="overview-card" onclick="switchTab('${t.id}')"><div class="card-icon">${t.icon}</div><h3>${t.title}</h3><p>${t.desc}</p><div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div><div class="bar-label"><span>${correct}/${total} 题</span><span>${pct}%</span></div></div>`;
+  }).join('');
+}
+
+function renderTopicPages() {
+  const container = document.getElementById('topicPages');
+  container.innerHTML = TOPICS.map((t, idx) => {
+    const svgBlock = getSVGForTopic(t.id);
+    const pointsHtml = t.points.map((p, i) => `<div class="knowledge-card"><div class="k-title"><span class="num">${i+1}</span> ${p.title}</div><div class="k-body">${p.body}</div></div>`).join('');
+    const quizHtml = t.quiz.map((q, qi) => `<div class="quiz-card" data-topic="${t.id}" data-qi="${qi}"><div class="q-text">${qi+1}. ${q.q}</div><div class="quiz-options">${q.opts.map((o, oi) => `<div class="quiz-opt" data-qi="${qi}" data-oi="${oi}" onclick="answerQuiz('${t.id}',${qi},${oi})">${o}</div>`).join('')}</div><div class="quiz-result" id="qr-${t.id}-${qi}"></div></div>`).join('');
+    return `<div class="topic-content" id="page-${t.id}"><h2>${t.icon} ${t.title} <small>${t.desc}</small></h2>${svgBlock}${pointsHtml}<div class="quiz-section"><h3>📝 章节练习</h3>${quizHtml}</div></div>`;
+  }).join('');
+  restoreQuizStates();
+}
+
+function getSVGForTopic(tid) {
+  const svgs = {
+    topic0: `<svg viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" style="max-height:160px;"><style>@keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.globe{animation:spin 20s linear infinite;transform-origin:210px 80px}</style><g class="globe"><circle cx="210" cy="80" r="55" fill="none" stroke="#1e88e5" stroke-width="2"/><ellipse cx="210" cy="80" rx="55" ry="15" fill="none" stroke="#1e88e5" stroke-width="1" opacity="0.5"/><ellipse cx="210" cy="80" rx="15" ry="55" fill="none" stroke="#1e88e5" stroke-width="1" opacity="0.5"/><line x1="175" y1="25" x2="245" y2="25" stroke="#e53935" stroke-width="1.5"/><text x="155" y="25" font-size="9" fill="#e53935">赤道 0°</text><line x1="155" y1="80" x2="265" y2="80" stroke="#43a047" stroke-width="1.5"/><text x="265" y="83" font-size="9" fill="#43a047">本初子午线 0°</text><text x="180" y="145" font-size="9" fill="#999">🌐 经线等长指南北 · 纬线不等长指东西</text></g></svg>`,
+    topic1: `<svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg" style="max-height:150px;"><style>@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}.fc{animation:floatA 4s ease infinite}</style><g class="fc"><text x="20" y="50" font-size="11" fill="#1e88e5" font-weight="bold">七大洲</text><text x="20" y="68" font-size="10" fill="#555">亚 非 北美 南美</text><text x="20" y="82" font-size="10" fill="#555">南极 欧洲 大洋洲</text><text x="210" y="50" font-size="11" fill="#43a047" font-weight="bold">四大洋</text><text x="210" y="68" font-size="10" fill="#555">太平洋 大西洋</text><text x="210" y="82" font-size="10" fill="#555">印度洋 北冰洋</text><text x="20" y="110" font-size="9" fill="#999" font-weight="bold">六大板块交界处 → 多火山地震</text><text x="20" y="125" font-size="9" fill="#999">环太平洋地震带 · 地中海—喜马拉雅带</text><line x1="15" y1="130" x2="400" y2="130" stroke="#ccc" stroke-width="0.5"/><text x="20" y="142" font-size="9" fill="#888">气候两大要素：气温 + 降水</text></g></svg>`,
+    topic2: `<svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg" style="max-height:150px;"><style>@keyframes rise{0%{opacity:0.3}50%{opacity:0.9}100%{opacity:0.3}}.st{animation:rise 3s ease infinite}</style><g><rect x="160" y="20" width="80" height="30" rx="3" fill="#e3f2fd" stroke="#1e88e5" stroke-width="1.5"/><text x="200" y="38" font-size="11" fill="#0d47a1" text-anchor="middle">第一阶梯 4000m+</text><rect x="130" y="55" width="140" height="25" rx="3" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/><text x="200" y="71" font-size="10" fill="#2e7d32" text-anchor="middle">第二阶梯 1000-2000m</text><rect x="100" y="85" width="200" height="25" rx="3" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/><text x="200" y="101" font-size="10" fill="#e65100" text-anchor="middle">第三阶梯 500m以下</text><text x="200" y="128" font-size="10" fill="#555" text-anchor="middle">🏔️ 西高东低 三级阶梯</text><text x="200" y="142" font-size="9" fill="#999" text-anchor="middle">秦岭—淮河：0°C等温线 · 800mm等降水量线</text></g></svg>`,
+    topic3: `<svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" style="max-height:140px;"><style>@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}.dot{animation:pulse 2s ease infinite}</style><g><text x="20" y="25" font-size="11" fill="#e65100" font-weight="bold">农业</text><text x="20" y="42" font-size="10" fill="#555">东耕西牧 · 南稻北麦</text><text x="20" y="56" font-size="10" fill="#555">南甘北甜 · 南油北豆</text><text x="20" y="80" font-size="11" fill="#1e88e5" font-weight="bold">四大工业基地</text><circle cx="230" cy="30" r="3" fill="#1e88e5" class="dot"/><text x="235" y="33" font-size="9" fill="#555">辽中南</text><circle cx="250" cy="45" r="3" fill="#1e88e5" class="dot"/><text x="255" y="48" font-size="9" fill="#555">京津唐</text><circle cx="270" cy="60" r="3" fill="#1e88e5" class="dot"/><text x="275" y="63" font-size="9" fill="#555">沪宁杭</text><circle cx="290" cy="75" r="3" fill="#1e88e5" class="dot"/><text x="295" y="78" font-size="9" fill="#555">珠三角</text><text x="20" y="115" font-size="10" fill="#555">🚄 铁路枢纽：郑州(京广+陇海)、徐州(京沪+陇海)</text></g></svg>`,
+    topic4: `<svg viewBox="0 0 420 145" xmlns="http://www.w3.org/2000/svg" style="max-height:145px;"><style>@keyframes fadeArea{0%,100%{opacity:0.6}50%{opacity:1}}.area{animation:fadeArea 4s ease infinite}</style><g class="area"><text x="30" y="25" font-size="11" fill="#e53935" font-weight="bold">四大区域</text><text x="30" y="45" font-size="10" fill="#555">🌲 北方 — 旱地 · 小麦</text><text x="30" y="60" font-size="10" fill="#555">🌴 南方 — 水田 · 水稻</text><text x="30" y="75" font-size="10" fill="#555">🏜️ 西北 — 畜牧 · 绿洲农业</text><text x="30" y="90" font-size="10" fill="#555">🏔️ 青藏 — 高寒 · 河谷农业</text><text x="200" y="25" font-size="11" fill="#0d47a1" font-weight="bold">港澳台</text><text x="200" y="45" font-size="10" fill="#555">🇭🇰 香港：转口贸易/金融</text><text x="200" y="60" font-size="10" fill="#555">🇲🇴 澳门：博彩旅游</text><text x="200" y="75" font-size="10" fill="#555">🇹🇼 台湾：进—加—出型经济</text><text x="30" y="120" font-size="9" fill="#999">三江源：长江·黄河·澜沧江源头</text></g></svg>`,
+    topic5: `<svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" style="max-height:140px;"><style>@keyframes orbit{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.sun{animation:orbit 12s linear infinite;transform-origin:210px 55px}</style><g><circle cx="210" cy="55" r="10" fill="#ffb300" opacity="0.8"/><text x="210" y="55" text-anchor="middle" font-size="7" fill="#fff">地</text><ellipse cx="210" cy="55" rx="80" ry="25" fill="none" stroke="#90caf9" stroke-width="1" stroke-dasharray="3"/><text x="300" y="55" font-size="8" fill="#ff8f00">公转轨道</text><text x="20" y="95" font-size="10" fill="#555">🌞 自转 → 昼夜交替 · 时差</text><text x="20" y="110" font-size="10" fill="#555">🌞 公转 → 四季更替 · 五带划分</text><text x="20" y="125" font-size="9" fill="#999">海拔每升100m 气温降0.6°C · 时区东加西减</text></g></svg>`
+  };
+  return `<div class="svg-illustration">${svgs[tid] || ''}</div>`;
+}
+
+function restoreQuizStates() {
+  const p = getProgress();
+  TOPICS.forEach(t => {
+    const st = p[t.id]; if (!st || !st.answers) return;
+    (t.quiz || []).forEach((q, qi) => {
+      const ans = st.answers[qi]; if (ans === undefined || ans === null) return;
+      const card = document.querySelector(`.quiz-card[data-topic="${t.id}"][data-qi="${qi}"]`);
+      if (!card) return;
+      const opts = card.querySelectorAll('.quiz-opt');
+      opts.forEach(el => el.classList.add('disabled'));
+      const correct = ans === q.ans;
+      opts[q.ans].classList.add('correct');
+      if (!correct) opts[ans].classList.add('wrong');
+      const re = document.getElementById(`qr-${t.id}-${qi}`);
+      if (re) { re.className = `quiz-result show ${ans === q.ans ? 'correct' : 'wrong'}`; re.textContent = ans === q.ans ? '✅ 回答正确！' : '❌ 正确答案：'+q.opts[q.ans]; }
+    });
+  });
+}
+
+function updateTabsDots() {
+  document.querySelectorAll('.tab[data-tab]').forEach(el => {
+    const tid = el.dataset.tab; if (tid === 'overview') return;
+    const st = topicState(tid); const dot = el.querySelector('.dot'); if (!dot) return;
+    if (st.total === 0) dot.className = 'dot none';
+    else if (st.correct === st.total) dot.className = 'dot done';
+    else dot.className = 'dot partial';
+  });
+}
+function updateTotalScore() { document.getElementById('totalScore').textContent = getTotalProgress().pct; }
+
+// ═══════════════ 交互 ═══════════════
+document.querySelectorAll('.tab').forEach(el => { el.addEventListener('click', function() { switchTab(this.dataset.tab); }); });
+
+function switchTab(tab) {
+  if (tab === 'practice') return;
+  document.getElementById('practicePanel').classList.remove('active');
+  document.getElementById('practicePanel').style.display = 'none';
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`)?.classList.add('active');
+  document.querySelectorAll('.topic-content').forEach(el => el.classList.remove('active'));
+  const page = document.getElementById(`page-${tab}`);
+  if (page) page.classList.add('active');
+  document.getElementById('page-overview').classList.toggle('active', tab === 'overview');
+  document.querySelector('.content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function answerQuiz(tid, qi, oi) {
+  const p = getProgress(); const topic = TOPICS.find(t => t.id === tid);
+  if (!topic) return; const st = topicState(tid);
+  if (st.answers && st.answers[qi] !== null && st.answers[qi] !== undefined) return;
+  const q = topic.quiz[qi]; const correct = oi === q.ans;
+  const card = document.querySelector(`.quiz-card[data-topic="${tid}"][data-qi="${qi}"]`);
+  if (!card) return;
+  const opts = card.querySelectorAll('.quiz-opt');
+  opts.forEach(el => el.classList.add('disabled'));
+  opts[q.ans].classList.add('correct');
+  if (!correct) opts[oi].classList.add('wrong');
+  const re = document.getElementById(`qr-${tid}-${qi}`);
+  if (re) { re.className = `quiz-result show ${correct ? 'correct' : 'wrong'}`; re.textContent = correct ? '✅ 回答正确！很棒！' : '❌ 再想想哦！正确答案：'+q.opts[q.ans]; }
+  const answers = st.answers || [];
+  answers[qi] = oi;
+  let cc = 0, tt = topic.quiz.length;
+  topic.quiz.forEach((_, idx) => { if (answers[idx] !== null && answers[idx] !== undefined && answers[idx] === topic.quiz[idx].ans) cc++; });
+  updateTopicProgress(tid, cc, tt, answers);
+}
+
+// ═══════════════ 综合练习 ═══════════════
+let practiceQuestions = [], practiceIdx = 0, practiceCorrect = 0, practiceAnswered = false;
+
+function startPractice() {
+  const allQ = [];
+  TOPICS.forEach(t => { (t.quiz || []).forEach((q, qi) => { allQ.push({ ...q, tid: t.id, qi }); }); });
+  for (let i = allQ.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [allQ[i], allQ[j]] = [allQ[j], allQ[i]]; }
+  practiceQuestions = allQ; practiceIdx = 0; practiceCorrect = 0; practiceAnswered = false;
+  document.querySelectorAll('.topic-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-overview').classList.remove('active');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById('practicePanel');
+  panel.classList.add('active'); panel.style.display = 'block';
+  renderPracticeQuestion();
+}
+
+function renderPracticeQuestion() {
+  const total = practiceQuestions.length, idx = practiceIdx;
+  if (idx >= total) {
+    document.getElementById('practiceContent').innerHTML = `<div class="empty-state"><div class="big-icon">🎉</div><h3 style="color:#2e7d32;margin-bottom:8px;">综合练习完成！</h3><p style="font-size:16px;">答对 <strong style="color:#2e7d32;font-size:24px;">${practiceCorrect}</strong> / ${total} 题</p><p style="margin-top:12px;color:#888;">掌握率 ${Math.round(practiceCorrect/total*100)}%</p><button class="anim-btn" onclick="startPractice()" style="margin-top:16px;padding:10px 28px;">🔄 再来一次</button><button class="back-btn" onclick="exitPractice()" style="margin-top:10px;display:inline-block;margin-left:10px;">返回总览</button></div>`;
+    document.getElementById('pCur').textContent = total; document.getElementById('pTotal').textContent = total;
+    document.getElementById('pFill').style.width = '100%'; document.getElementById('pScoreDisplay').textContent = '✅ '+practiceCorrect;
+    return;
+  }
+  const q = practiceQuestions[idx];
+  document.getElementById('pCur').textContent = idx + 1; document.getElementById('pTotal').textContent = total;
+  document.getElementById('pFill').style.width = `${(idx/total)*100}%`; document.getElementById('pScoreDisplay').textContent = '✅ '+practiceCorrect;
+  practiceAnswered = false;
+  const topic = TOPICS.find(t => t.id === q.tid);
+  const topicLabel = topic ? `${topic.icon} ${topic.title}` : '';
+  document.getElementById('practiceContent').innerHTML = `<div class="quiz-card"><div class="q-text" style="margin-bottom:16px;"><span style="font-size:12px;color:#999;display:block;margin-bottom:4px;">${topicLabel}</span><strong>${q.q}</strong></div><div class="quiz-options" id="practiceOptions">${q.opts.map((o, oi) => `<div class="quiz-opt" data-oi="${oi}" onclick="answerPractice(${oi})">${o}</div>`).join('')}</div><div class="quiz-result" id="practiceResult"></div><div style="margin-top:12px;text-align:right;"><button class="back-btn" id="nextBtn" onclick="nextPractice()" style="display:none;padding:8px 24px;background:#1e88e5;color:#fff;border:none;">下一题 →</button></div></div>`;
+}
+
+function answerPractice(oi) {
+  if (practiceAnswered) return; practiceAnswered = true;
+  const q = practiceQuestions[practiceIdx]; const correct = oi === q.ans;
+  const opts = document.querySelectorAll('#practiceOptions .quiz-opt');
+  opts.forEach(el => el.classList.add('disabled')); opts[q.ans].classList.add('correct');
+  if (!correct) opts[oi].classList.add('wrong');
+  const re = document.getElementById('practiceResult');
+  if (re) { re.className = `quiz-result show ${correct ? 'correct' : 'wrong'}`; re.textContent = correct ? '✅ 回答正确！' : '❌ 正确答案：'+q.opts[q.ans]; }
+  if (correct) practiceCorrect++;
+  const p = getProgress(); const st = topicState(q.tid); const topic = TOPICS.find(t => t.id === q.tid);
+  if (topic) { const answers = st.answers || []; answers[q.qi] = oi; let cc = 0, tt = topic.quiz.length; topic.quiz.forEach((_, idx) => { if (answers[idx] !== null && answers[idx] !== undefined && answers[idx] === topic.quiz[idx].ans) cc++; }); updateTopicProgress(q.tid, cc, tt, answers); }
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('practiceResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function nextPractice() { practiceIdx++; renderPracticeQuestion(); }
+function exitPractice() { document.getElementById('practicePanel').classList.remove('active'); document.getElementById('practicePanel').style.display = 'none'; switchTab('overview'); }
+
+function resetAll() {
+  if (!confirm('确定要清除所有学习进度吗？\n所有答题记录将被清空，可重新学习。')) return;
+  try { localStorage.removeItem('geoReviewProgress'); } catch(e) {}
+  practiceIdx = 0; practiceCorrect = 0; practiceAnswered = false; practiceQuestions = [];
+  renderAll(); switchTab('overview');
+}
+
+// ═══════════════ 初始化 ═══════════════
+renderAll();
+document.querySelectorAll('.overview-card').forEach((el, i) => { el.style.animation = `fadeIn 0.5s ease ${i*0.08}s both`; });
+</script>
+</body>
+</html>
