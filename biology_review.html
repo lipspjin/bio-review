@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔬 初中生物中考复习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  /* ─── 主容器 ─── */
+  .app {
+    max-width: 900px; margin: 0 auto;
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+    border-radius: 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    padding: 24px 28px 32px;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ─── 头部 ─── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+  }
+  .header h1 {
+    font-size: 26px; font-weight: 700;
+    background: linear-gradient(135deg, #2e7d32, #66bb6a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+  }
+  .header .score {
+    font-size: 15px; color: #555;
+    background: #f0f7f0; padding: 6px 16px; border-radius: 30px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .header .score strong { color: #2e7d32; font-size: 18px; }
+  .reset-btn {
+    background: #fff; border: 2px solid #ef5350; color: #c62828;
+    padding: 5px 14px; border-radius: 20px; cursor: pointer;
+    font-size: 13px; font-weight: 500; transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .reset-btn:hover { background: #ffebee; transform: scale(1.03); }
+
+  /* ─── 导航标签 ─── */
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto;
+    margin-bottom: 16px; border-bottom: 2px solid #e8f0e8; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 8px 16px; cursor: pointer; border-radius: 20px 20px 0 0;
+    font-size: 14px; font-weight: 500; color: #666; transition: all 0.3s;
+    background: transparent; border: none; position: relative; user-select: none;
+  }
+  .tab:hover { color: #2e7d32; background: #f0f7f0; }
+  .tab.active { color: #1b5e20; background: #e8f5e9; font-weight: 600; }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 3px; background: #43a047; border-radius: 3px 3px 0 0;
+  }
+  .tab .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-right: 5px; vertical-align: middle;
+  }
+  .dot.done { background: #43a047; }
+  .dot.partial { background: #ffa726; }
+  .dot.none { background: #bdbdbd; }
+
+  /* ─── 内容区 ─── */
+  .content { min-height: 400px; }
+
+  /* ─── 总览页 ─── */
+  .overview-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+    gap: 16px; margin-top: 8px;
+  }
+  .overview-card {
+    background: #fafffa; border-radius: 16px; padding: 18px 16px 16px;
+    border: 1px solid #e0f0e0; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
+  }
+  .overview-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+  .overview-card .card-icon { font-size: 32px; margin-bottom: 6px; }
+  .overview-card h3 { font-size: 16px; color: #1b5e20; margin-bottom: 4px; }
+  .overview-card p { font-size: 13px; color: #777; margin-bottom: 10px; line-height: 1.4; }
+  .overview-card .bar-wrap {
+    height: 6px; background: #e8f0e8; border-radius: 3px; overflow: hidden;
+  }
+  .overview-card .bar {
+    height: 100%; border-radius: 3px; transition: width 0.8s ease;
+    background: linear-gradient(90deg, #66bb6a, #43a047);
+  }
+  .overview-card .bar-label {
+    font-size: 12px; color: #888; margin-top: 4px; display: flex; justify-content: space-between;
+  }
+
+  /* ─── 知识点面板 ─── */
+  .topic-content { display: none; }
+  .topic-content.active { display: block; animation: slideIn 0.4s ease; }
+  @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+  .topic-content h2 { font-size: 22px; color: #1b5e20; margin: 8px 0 14px; display: flex; align-items: center; gap: 10px; }
+  .topic-content h2 small { font-size: 14px; font-weight: 400; color: #888; }
+
+  /* ─── 知识点卡片 ─── */
+  .knowledge-card {
+    background: #fff; border-radius: 14px; padding: 16px 18px;
+    margin-bottom: 14px; border: 1px solid #e8f0e8;
+    transition: box-shadow 0.2s;
+  }
+  .knowledge-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.04); }
+  .knowledge-card .k-title {
+    font-weight: 600; font-size: 15px; color: #2e7d32; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .knowledge-card .k-title .num {
+    background: #e8f5e9; width: 24px; height: 24px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #2e7d32; flex-shrink: 0;
+  }
+  .knowledge-card .k-body {
+    font-size: 14px; color: #444; line-height: 1.7;
+  }
+  .knowledge-card .k-body .highlight {
+    background: #fff8e1; padding: 0 4px; border-radius: 3px; font-weight: 500; color: #e65100;
+  }
+  .knowledge-card .k-body .tag {
+    display: inline-block; background: #e3f2fd; color: #1565c0;
+    font-size: 12px; padding: 2px 8px; border-radius: 10px; margin: 2px;
+  }
+
+  /* ─── SVG 插图区 ─── */
+  .svg-illustration {
+    display: flex; justify-content: center; margin: 10px 0 16px;
+    background: #fafff5; border-radius: 12px; padding: 12px;
+    border: 1px dashed #c8e6c9;
+  }
+  .svg-illustration svg { max-width: 100%; height: auto; }
+
+  /* ─── 动画区 ─── */
+  .anim-box {
+    background: #f5fbf5; border-radius: 12px; padding: 14px 18px;
+    margin: 8px 0 14px; border: 1px solid #c8e6c9;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .anim-box .label { font-size: 13px; color: #666; }
+  .anim-box .anim-btn {
+    padding: 6px 18px; border: none; background: #43a047; color: #fff;
+    border-radius: 20px; cursor: pointer; font-size: 13px; transition: background 0.3s;
+  }
+  .anim-box .anim-btn:hover { background: #2e7d32; }
+
+  /* 呼吸动画演示 */
+  .breath-demo {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .lung {
+    width: 60px; height: 80px; background: #ef9a9a; border-radius: 50%;
+    position: relative; transition: all 1s ease-in-out;
+  }
+  .lung.inhale { transform: scale(1.15); background: #e57373; }
+
+  /* 食物链动画 */
+  .food-chain {
+    display: flex; align-items: center; gap: 6px; font-size: 28px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .food-chain .arrow { color: #43a047; font-weight: bold; font-size: 24px; transition: transform 0.3s; }
+  .food-chain .arrow.pulse { animation: arrowPulse 0.6s ease; }
+  @keyframes arrowPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+  /* ─── 练习区 ─── */
+  .quiz-section {
+    margin-top: 20px; padding-top: 16px;
+    border-top: 2px dashed #c8e6c9;
+  }
+  .quiz-section h3 {
+    font-size: 17px; color: #1b5e20; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-card {
+    background: #fafffa; border-radius: 14px; padding: 16px 18px;
+    border: 1px solid #e0f0e0; margin-bottom: 12px;
+  }
+  .quiz-card .q-text {
+    font-size: 15px; font-weight: 500; color: #333; margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    padding: 10px 14px; border-radius: 10px; cursor: pointer;
+    border: 2px solid #e0e0e0; font-size: 14px; transition: all 0.25s;
+    display: flex; align-items: center; gap: 8px; background: #fff;
+    user-select: none;
+  }
+  .quiz-opt:hover { border-color: #a5d6a7; background: #f1f8e9; }
+  .quiz-opt.selected { border-color: #43a047; background: #e8f5e9; }
+  .quiz-opt.correct { border-color: #43a047; background: #e8f5e9; }
+  .quiz-opt.correct::after { content: ' ✓'; color: #2e7d32; font-weight: bold; margin-left: auto; }
+  .quiz-opt.wrong { border-color: #ef5350; background: #ffebee; }
+  .quiz-opt.wrong::after { content: ' ✗'; color: #c62828; font-weight: bold; margin-left: auto; }
+  .quiz-opt.disabled { pointer-events: none; }
+  .quiz-result {
+    margin-top: 8px; font-size: 14px; padding: 8px 12px;
+    border-radius: 8px; display: none;
+  }
+  .quiz-result.show { display: block; animation: fadeIn 0.3s ease; }
+  .quiz-result.correct { background: #e8f5e9; color: #2e7d32; }
+  .quiz-result.wrong { background: #ffebee; color: #c62828; }
+
+  /* ─── 练习面板 (整体练习模式) ─── */
+  .practice-panel { display: none; }
+  .practice-panel.active { display: block; animation: slideIn 0.4s ease; }
+  .practice-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .practice-header .p-info { font-size: 14px; color: #666; }
+  .practice-header .p-info strong { color: #2e7d32; font-size: 18px; }
+  .practice-header .p-progress {
+    height: 4px; background: #e8f0e8; border-radius: 2px; flex: 1; min-width: 80px;
+    margin: 0 16px;
+  }
+  .practice-header .p-progress .fill {
+    height: 100%; background: linear-gradient(90deg, #66bb6a, #43a047);
+    border-radius: 2px; transition: width 0.5s ease; width: 0%;
+  }
+  .back-btn {
+    padding: 6px 14px; border: 1px solid #c8e6c9; background: #fff;
+    border-radius: 20px; cursor: pointer; font-size: 13px; color: #555;
+    transition: all 0.3s;
+  }
+  .back-btn:hover { background: #e8f5e9; color: #2e7d32; }
+
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: #999;
+  }
+  .empty-state .big-icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* ─── 响应式：手机优先 ─── */
+  @media (max-width: 768px) {
+    body { padding: 10px; }
+    .app { padding: 14px; border-radius: 18px; }
+    .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .header h1 { font-size: 20px; }
+    .header .score { font-size: 14px; padding: 5px 14px; }
+
+    /* 标签横向滚动 */
+    .tabs { gap: 4px; padding-bottom: 4px; }
+    .tab { font-size: 13px; padding: 7px 12px; white-space: nowrap; flex-shrink: 0; }
+
+    /* 概览卡片单列 */
+    .overview-grid { grid-template-columns: 1fr; }
+    .overview-card { padding: 14px; }
+    .overview-card .card-icon { font-size: 28px; }
+
+    /* 知识点卡片触控优化 */
+    .knowledge-card { padding: 12px 14px; }
+    .knowledge-card .k-title { font-size: 14px; }
+    .knowledge-card .k-body { font-size: 13px; line-height: 1.65; }
+
+    /* 题干和选项触控友好 */
+    .quiz-card .q-text { font-size: 15px; }
+    .quiz-opt { padding: 12px 14px; font-size: 14px; min-height: 44px; }
+
+    /* 练习面板 */
+    .practice-header { flex-wrap: wrap; gap: 6px; }
+    .practice-header .p-info { font-size: 13px; }
+    .practice-header .p-progress { min-width: 60px; margin: 0 8px; }
+
+    /* SVG 插图 */
+    .svg-illustration { padding: 8px; }
+    .svg-illustration svg { max-height: 150px; }
+
+    /* 呼吸动画 */
+    .breath-demo { flex-direction: column; align-items: center; }
+
+    /* 总览按钮 */
+    .anim-btn { font-size: 14px; padding: 9px 24px; }
+  }
+
+  @media (max-width: 400px) {
+    .app { padding: 10px; border-radius: 14px; }
+    .header h1 { font-size: 17px; }
+    .tab { font-size: 12px; padding: 6px 10px; }
+    .knowledge-card .k-body { font-size: 12px; }
+    .quiz-card .q-text { font-size: 14px; }
+    .quiz-opt { padding: 10px 12px; font-size: 13px; min-height: 40px; }
+    .overview-card h3 { font-size: 14px; }
+    .overview-card p { font-size: 12px; }
+  }
+
+  /* ─── 粒子背景装饰 ─── */
+  .particle { position: fixed; pointer-events: none; opacity: 0.15; z-index: -1; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- 头部 -->
+  <div class="header">
+    <h1>🔬 初中生物中考复习</h1>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="score">🏆 掌握 <strong id="totalScore">0</strong>%</div>
+      <button class="reset-btn" onclick="resetAll()">🔄 重新学习</button>
+    </div>
+  </div>
+
+  <!-- 导航 -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">📊 总览</button>
+    <button class="tab" data-tab="topic0"><span class="dot none"></span>显微镜与细胞</button>
+    <button class="tab" data-tab="topic1"><span class="dot none"></span>生物圈与生态</button>
+    <button class="tab" data-tab="topic2"><span class="dot none"></span>人体生理</button>
+    <button class="tab" data-tab="topic3"><span class="dot none"></span>生殖与遗传</button>
+    <button class="tab" data-tab="topic4"><span class="dot none"></span>分类与进化</button>
+    <button class="tab" data-tab="topic5"><span class="dot none"></span>实验与探究</button>
+  </div>
+
+  <!-- 内容 -->
+  <div class="content">
+    <!-- 总览 -->
+    <div class="topic-content active" id="page-overview">
+      <h2>📋 学习总览</h2>
+      <p style="color:#666;margin-bottom:16px;">点击卡片进入对应章节学习，完成练习后状态自动保存 ✨</p>
+      <div class="overview-grid" id="overviewGrid"></div>
+      <div style="margin-top:20px;text-align:center;">
+        <button class="anim-btn" onclick="startPractice()" style="font-size:15px;padding:10px 32px;border-radius:30px;">📝 综合练习</button>
+      </div>
+    </div>
+
+    <!-- 各专题内容（由 JS 渲染） -->
+    <div id="topicPages"></div>
+
+    <!-- 综合练习面板 -->
+    <div class="practice-panel" id="practicePanel">
+      <div class="practice-header">
+        <div><span class="back-btn" onclick="exitPractice()">← 返回</span></div>
+        <div class="p-info">第 <strong id="pCur">1</strong> / <span id="pTotal">10</span> 题</div>
+        <div class="p-progress"><div class="fill" id="pFill"></div></div>
+        <div class="p-info" id="pScoreDisplay">✅ 0</div>
+      </div>
+      <div id="practiceContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  数据
+// ══════════════════════════════════════════
+
+const TOPICS = [
+  {
+    id: 'topic0', icon: '🔬', title: '显微镜与细胞',
+    desc: '显微镜操作、细胞结构与功能、细胞分裂分化',
+    points: [
+      { title: '显微镜操作要点', body: '对光：低倍物镜对准通光孔 → 大光圈 → 反光镜调亮<br>调焦：粗准焦螺旋找到物像 → 细准焦螺旋调清晰<br>物像移动方向与玻片移动方向 <strong>相反</strong>（偏哪往哪移）<br>放大倍数 = 目镜 × 物镜 🎯 低倍镜下视野亮、范围大' },
+      { title: '动、植物细胞结构', body: '📌 <strong>共同结构</strong>：细胞膜、细胞质、细胞核、线粒体<br>🌱 <strong>植物特有</strong>：细胞壁（支持和保护）、叶绿体（光合作用）、液泡（储存营养）<br>💡 线粒体→呼吸作用（所有活细胞都有）<br>💡 叶绿体→光合作用（仅绿色植物部分细胞有）' },
+      { title: '细胞分裂与分化', body: '分裂：<span class="highlight">一个细胞 → 两个子细胞</span>，遗传物质先复制后均分<br>分化：<span class="highlight">相同细胞 → 不同形态功能</span> → 形成组织<br>分裂使细胞 <strong>数目增多</strong>，分化使细胞 <strong>种类增多</strong><br>细胞生长→分裂→分化→形成组织→器官→系统→个体' },
+    ],
+    quiz: [
+      { q: '显微镜对光时，应选用什么物镜？', opts: ['高倍物镜', '低倍物镜', '任意物镜', '不用物镜'], ans: 1 },
+      { q: '以下哪个结构是植物细胞特有、动物细胞没有的？', opts: ['细胞膜', '线粒体', '细胞壁', '细胞核'], ans: 2 },
+      { q: '细胞分裂过程中，遗传物质如何变化？', opts: ['减少一半', '先复制后均分', '保持不变', '随机分配'], ans: 1 },
+      { q: '制作洋葱表皮细胞临时装片时，用于染色的试剂是？', opts: ['清水', '生理盐水', '碘液', '酒精'], ans: 2 },
+      { q: '显微镜下物像在视野左下方，要将物像移至中央，玻片应移向？', opts: ['左下方', '右上方', '左上方', '右下方'], ans: 0 },
+      { q: '动物细胞和植物细胞中都含有的能量转换器是？', opts: ['叶绿体', '线粒体', '液泡', '细胞壁'], ans: 1 },
+      { q: '细胞分化的结果是形成不同的？', opts: ['细胞', '组织', '器官', '系统'], ans: 1 },
+    ]
+  },
+  {
+    id: 'topic1', icon: '🌿', title: '生物圈与生态系统',
+    desc: '生态系统组成、食物链/网、能量流动、生态平衡',
+    points: [
+      { title: '生态系统的组成', body: '<span class="tag">生产者</span> 植物（将光能转化为化学能）<br><span class="tag">消费者</span> 动物（直接或间接以植物为食）<br><span class="tag">分解者</span> 细菌、真菌（将有机物分解为无机物）<br><span class="tag">非生物部分</span> 阳光、水、空气、温度、土壤<br>⚠️ 三者缺一不可，共同维持生态平衡' },
+      { title: '食物链与食物网', body: '起点：<span class="highlight">生产者</span>（植物）<br>箭头：指向 <strong>捕食者</strong>（→ 表示物质和能量流动方向）<br>示例：草 → 蝗虫 → 青蛙 → 蛇 → 鹰<br>💡 能量沿食物链<span class="highlight">单向流动、逐级递减</span>（越往上生物数量越少）<br>💡 有毒物质会 <strong>富集</strong>（营养级越高，含量越高）' },
+      { title: '生态平衡与碳氧平衡', body: '生态平衡：生态系统能通过 <span class="highlight">自我调节</span> 维持相对稳定<br>⚠️ 自我调节能力 <strong>有限</strong>，超出范围会被破坏<br>碳—氧平衡：光合作用吸收 CO₂ 释放 O₂ → 维持大气成分稳定<br>温室效应 → CO₂ 过多（化石燃料燃烧、森林砍伐）' },
+    ],
+    quiz: [
+      { q: '生态系统中，生产者主要是指什么？', opts: ['动物', '植物', '细菌', '真菌'], ans: 1 },
+      { q: '食物链中，能量流动的特点是什么？', opts: ['循环流动', '双向流动', '单向递减', '逐级递增'], ans: 2 },
+      { q: '有毒物质在食物链中会怎样变化？', opts: ['逐渐减少', '保持不变', '逐级富集', '被分解'], ans: 2 },
+      { q: '下列哪项不属于生态系统的非生物部分？', opts: ['阳光', '温度', '植物', '土壤'], ans: 2 },
+      { q: '在草→鼠→蛇→鹰的食物链中，数量最少的生物是？', opts: ['草', '鼠', '蛇', '鹰'], ans: 3 },
+      { q: '生态系统自我调节能力的大小主要取决于？', opts: ['生产者数量', '消费者数量', '生物种类的多少', '非生物因素'], ans: 2 },
+      { q: '下列做法不利于维持碳氧平衡的是？', opts: ['多植树造林', '多开私家车', '节约用电', '少用一次性木筷'], ans: 1 },
+    ]
+  },
+  {
+    id: 'topic2', icon: '🧬', title: '人体生理',
+    desc: '消化、呼吸、循环、泌尿、神经系统',
+    points: [
+      { title: '消化系统', body: '📌 <strong>三大营养物质的消化</strong><br>淀粉：口腔<span class="highlight">（唾液淀粉酶→麦芽糖）</span>→小肠→<strong>葡萄糖</strong><br>蛋白质：胃<span class="highlight">（胃蛋白酶）</span>→小肠→<strong>氨基酸</strong><br>脂肪：小肠<span class="highlight">（胆汁乳化+脂肪酶）</span>→<strong>甘油+脂肪酸</strong><br>🥇 <strong>小肠</strong>是主要的消化和吸收器官（长5-6m、环形皱襞+绒毛、薄壁）' },
+      { title: '呼吸系统', body: '吸气：膈肌<span class="highlight">收缩→下降</span> → 肋间肌收缩→胸廓扩大 → 气压降低→气体进入<br>呼气：膈肌<span class="highlight">舒张→上升</span> → 胸廓缩小 → 气压升高→气体排出<br>肺泡适于气体交换的特点：<br>① 薄（单层上皮细胞）② 多（数量大）③ 有毛细血管网' },
+      { title: '循环系统', body: '体循环：左心室→<strong>主动脉</strong>→全身→上下腔静脉→<strong>右心房</strong><br>肺循环：右心室→<strong>肺动脉</strong>→肺→肺静脉→<strong>左心房</strong><br>⚠️ 注意：肺动脉里流的是 <span class="highlight">静脉血</span>（含CO₂多）<br>肺静脉里流的是 <span class="highlight">动脉血</span>（含O₂多）' },
+      { title: '泌尿系统', body: '肾脏（<strong>肾单位</strong>）→ 滤过作用 → 原尿 → 重吸收作用 → 尿液<br>⛔ 尿中出现 <span class="highlight">葡萄糖</span> → 可能患糖尿病<br>⛔ 尿中出现 <span class="highlight">蛋白质/血细胞</span> → 肾小球可能病变' },
+      { title: '神经系统与反射', body: '反射弧：感受器 → 传入神经 → <span class="highlight">神经中枢</span> → 传出神经 → 效应器<br>🧠 <span class="tag">非条件反射</span> 生来就有（缩手反射、膝跳反射）；低级，由脊髓控制<br>🧠 <span class="tag">条件反射</span> 后天学习建立（望梅止渴）；高级，由大脑皮层控制' },
+    ],
+    quiz: [
+      { q: '蛋白质在人体内被消化成什么才被吸收？', opts: ['葡萄糖', '氨基酸', '麦芽糖', '甘油'], ans: 1 },
+      { q: '吸气时膈肌的状态是？', opts: ['舒张上升', '收缩下降', '不变', '先降后升'], ans: 1 },
+      { q: '肺动脉里流的是什么血？', opts: ['动脉血', '静脉血', '混合血', '淋巴液'], ans: 1 },
+      { q: '人体内消化和吸收营养物质的主要场所是？', opts: ['口腔', '胃', '小肠', '大肠'], ans: 2 },
+      { q: '尿液形成过程中，肾小管的主要作用是？', opts: ['过滤', '重吸收', '分泌', '排泄'], ans: 1 },
+      { q: '下列属于非条件反射的是？', opts: ['望梅止渴', '谈虎色变', '缩手反射', '画饼充饥'], ans: 2 },
+      { q: '人体内氧气浓度最高的部位是？', opts: ['肺泡', '组织细胞', '肺动脉', '右心房'], ans: 0 },
+    ]
+  },
+  {
+    id: 'topic3', icon: '🌺', title: '生殖发育与遗传',
+    desc: '花的结构、人的生殖、DNA与基因、显隐性',
+    points: [
+      { title: '花的结构与生殖', body: '雄蕊（花药→<span class="highlight">花粉</span>）→ 传粉 → 雌蕊（柱头→花柱→子房）<br>🌱 子房 → <strong>果实</strong>（果皮+种子）<br>🌱 胚珠 → <strong>种子</strong><br>🌱 受精卵 → <strong>胚</strong>（新植物体的幼体）' },
+      { title: '人的生殖发育', body: '受精：精子与卵细胞在 <span class="highlight">输卵管</span> 相遇<br>着床：受精卵分裂→胚泡→植入 <span class="highlight">子宫</span> 内膜<br>胚胎发育期通过 <strong>胎盘和脐带</strong> 从母体获取营养和氧气<br>青春期第二性征出现：受 <span class="highlight">性激素</span> 调节' },
+      { title: 'DNA、基因与遗传', body: '细胞核 → <strong>染色体</strong>（DNA+蛋白质）→ <strong>DNA</strong> → <strong>基因</strong>（有遗传效应的DNA片段）<br>📌 基因是控制生物性状的 <span class="highlight">基本单位</span><br>显性基因（大写，如A）vs 隐性基因（小写，如a）<br>规律：Aa×Aa → 子代 AA:Aa:aa = <strong>1:2:1</strong>，显性性状:隐性性状 = <strong>3:1</strong><br>⚠️ 近亲结婚 → 隐性遗传病概率 <strong>增加</strong>' },
+    ],
+    quiz: [
+      { q: '果实是由花的哪个结构发育而来？', opts: ['花药', '子房', '胚珠', '花柱'], ans: 1 },
+      { q: '人的受精卵在什么部位形成？', opts: ['子宫', '卵巢', '输卵管', '阴道'], ans: 2 },
+      { q: '控制生物性状的基本单位是什么？', opts: ['染色体', 'DNA', '基因', '蛋白质'], ans: 2 },
+      { q: '一对肤色正常的夫妇生了一个白化病孩子（白化病由隐性基因a控制），该夫妇的基因组成是？', opts: ['AA和Aa', 'Aa和Aa', 'AA和AA', 'Aa和aa'], ans: 1 },
+      { q: '人体体细胞中染色体的数量是？', opts: ['23条', '23对', '46对', '22条'], ans: 1 },
+      { q: '人的性别由什么染色体决定？', opts: ['常染色体', '性染色体', 'DNA', '基因'], ans: 1 },
+      { q: '下列属于可遗传变异的是？', opts: ['晒黑的皮肤', '手术割的双眼皮', '镰刀型细胞贫血症', '营养好导致长高'], ans: 2 },
+    ]
+  },
+  {
+    id: 'topic4', icon: '🦋', title: '生物分类与进化',
+    desc: '植物/动物分类、从简单到复杂、进化论',
+    points: [
+      { title: '植物分类（由简单到复杂）', body: '藻类（无根茎叶）→ 苔藓（有茎叶，无根）→ 蕨类（有根茎叶，有输导组织）→ 裸子植物（种子无果皮）→ <strong>被子植物</strong>（种子有果皮，最进化/分布最广）<br>📌 区分关键：<span class="highlight">有无种子</span>、<span class="highlight">种子有无果皮包被</span>' },
+      { title: '动物分类', body: '<span class="tag">无脊椎动物</span> 腔肠→扁形→线形→环节→软体→节肢<br>节肢动物（昆虫/蜘蛛/甲壳类）：种类最多、分布最广<br><span class="tag">脊椎动物</span> 鱼→两栖→爬行→鸟→哺乳<br>📌 体温恒定：<span class="highlight">鸟类和哺乳类</span>；变温：其他<br>📌 哺乳动物特征：体表被毛、胎生哺乳、用肺呼吸' },
+      { title: '达尔文进化论', body: '自然选择学说核心：<br><span class="highlight">过度繁殖</span> → <span class="highlight">生存竞争</span> → <span class="highlight">遗传变异</span> → <span class="highlight">适者生存</span><br>💡 自然选择的 <strong>素材</strong>：遗传变异<br>💡 自然选择的 <strong>动力</strong>：生存竞争<br>💡 自然选择的 <strong>结果</strong>：适应环境、新物种形成' },
+    ],
+    quiz: [
+      { q: '以下哪种植物是最进化的？（种子有果皮包被）', opts: ['蕨类', '裸子植物', '被子植物', '苔藓'], ans: 2 },
+      { q: '体温恒定的动物类群是？', opts: ['鱼类和两栖类', '爬行类和鸟类', '鸟类和哺乳类', '鱼类和爬行类'], ans: 2 },
+      { q: '自然选择学说的核心观点是？', opts: ['用进废退', '适者生存', '获得性遗传', '定向变异'], ans: 1 },
+      { q: '生物分类的最基本单位是？', opts: ['界', '门', '纲', '种'], ans: 3 },
+      { q: '下列动物中属于哺乳动物的是？', opts: ['企鹅', '蝙蝠', '扬子鳄', '青蛙'], ans: 1 },
+      { q: '裸子植物与被子植物的主要区别在于？', opts: ['有无根', '有无种子', '种子有无果皮包被', '有无茎叶'], ans: 2 },
+      { q: '长颈鹿的颈很长，按自然选择学说，其形成原因是？', opts: ['经常伸脖子吃高处叶子的结果', '由长颈基因决定，与环境无关', '长颈变异的个体容易存活繁衍', '人工选择的结果'], ans: 2 },
+    ]
+  },
+  {
+    id: 'topic5', icon: '🧪', title: '实验与探究',
+    desc: '对照实验原则、淀粉与碘液、CO₂检验',
+    points: [
+      { title: '对照实验基本原则', body: '📌 <span class="highlight">单一变量</span>：只改变一个实验条件，其他条件保持一致<br>📌 <span class="highlight">设置对照组</span>：对照（常态）vs 实验（处理）<br>📌 <span class="highlight">重复实验</span>：避免偶然性，提高实验可靠性<br>📌 结果要 <strong>可观测、可测量</strong>' },
+      { title: '常用实验试剂与现象', body: '🔵 <span class="tag">淀粉遇碘变蓝</span> → 检验淀粉是否存在 / 检验光合作用产生淀粉<br>💧 <span class="tag">澄清石灰水变浑浊</span> → 检验 CO₂ 的存在<br>🔥 <span class="tag">酒精脱色</span> → 溶解叶绿素，便于观察（需隔水加热）<br>🔍 <span class="tag">生理盐水</span> 0.9% → 制作人口腔上皮细胞装片，维持细胞正常形态' },
+      { title: '经典实验：光合作用需要光', body: '步骤：暗处理（消耗原有淀粉）→ 部分遮光 → 光照 → 酒精脱色 → 碘液检验<br>现象：<strong>见光部分变蓝</strong>（产生淀粉），<strong>遮光部分不变蓝</strong><br>结论：光合作用需要光，产物是 <span class="highlight">淀粉</span><br>💡 暗处理的目的是让叶片中原有的淀粉 <strong>运走耗尽</strong>' },
+    ],
+    quiz: [
+      { q: '对照实验最核心的原则是什么？', opts: ['多变量', '单一变量', '不设对照', '一次实验即可'], ans: 1 },
+      { q: '用什么试剂检验二氧化碳？', opts: ['碘液', '澄清石灰水', '生理盐水', '酒精'], ans: 1 },
+      { q: '光合作用实验中，酒精的作用是什么？', opts: ['杀死叶片', '溶解叶绿素', '消毒', '提供营养'], ans: 1 },
+      { q: '在探究光对鼠妇分布的影响实验中，实验变量是？', opts: ['温度', '湿度', '光照', '空气'], ans: 2 },
+      { q: '显微镜视野中发现污点，移动玻片后污点不动，转动目镜后污点也不动，污点可能在？', opts: ['目镜上', '物镜上', '玻片上', '反光镜上'], ans: 1 },
+      { q: '在探究馒头在口腔中的变化实验中，加入唾液模拟的是哪种消化液？', opts: ['胃液', '胆汁', '唾液', '肠液'], ans: 2 },
+      { q: '重复实验在科学探究中的主要目的是？', opts: ['增加实验成本', '避免偶然性', '延长实验时间', '减少实验步骤'], ans: 1 },
+    ]
+  },
+];
+
+// ══════════════════════════════════════════
+//  状态管理
+// ══════════════════════════════════════════
+
+function getProgress() {
+  try {
+    const d = localStorage.getItem('bioReviewProgress');
+    return d ? JSON.parse(d) : {};
+  } catch(e) { return {}; }
+}
+function saveProgress(p) {
+  try { localStorage.setItem('bioReviewProgress', JSON.stringify(p)); } catch(e) {}
+}
+
+// 获取某专题答题状态
+function topicState(tid) {
+  const p = getProgress();
+  const key = tid;
+  if (!p[key]) p[key] = { done: false, correct: 0, total: 0, answers: [] };
+  return p[key];
+}
+
+function updateTopicProgress(tid, correct, total, answers) {
+  const p = getProgress();
+  const key = tid;
+  p[key] = { done: correct === total, correct, total, answers };
+  saveProgress(p);
+  renderAll();
+}
+
+function getTotalProgress() {
+  const p = getProgress();
+  let totalQ = 0, totalC = 0;
+  TOPICS.forEach(t => {
+    const total = t.quiz.length;
+    const correct = p[t.id] ? p[t.id].correct : 0;
+    totalQ += total;
+    totalC += correct;
+  });
+  return { correct: totalC, total: totalQ, pct: totalQ ? Math.round(totalC/totalQ*100) : 0 };
+}
+
+// ══════════════════════════════════════════
+//  渲染
+// ══════════════════════════════════════════
+
+function renderAll() {
+  // 保存当前激活的专题页面，防止重建后丢失 active 状态
+  const activeEl = document.querySelector('.topic-content.active');
+  const activeId = activeEl ? activeEl.id : null;
+
+  renderOverview();
+  renderTopicPages();
+  updateTabsDots();
+  updateTotalScore();
+
+  // 恢复激活页面（总览页不在 topicPages 容器内，不受影响）
+  if (activeId && activeId !== 'page-overview') {
+    const page = document.getElementById(activeId);
+    if (page) page.classList.add('active');
+  }
+}
+
+function renderOverview() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = TOPICS.map(t => {
+    const st = topicState(t.id);
+    const total = t.quiz.length;
+    const correct = st.correct || 0;
+    const pct = Math.round(correct/total*100);
+    return `
+      <div class="overview-card" onclick="switchTab('${t.id}')">
+        <div class="card-icon">${t.icon}</div>
+        <h3>${t.title}</h3>
+        <p>${t.desc}</p>
+        <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+        <div class="bar-label"><span>${correct}/${total} 题</span><span>${pct}%</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTopicPages() {
+  const container = document.getElementById('topicPages');
+  container.innerHTML = TOPICS.map((t, idx) => {
+    // SVG 插图：每个专题配一个
+    const svgBlock = getSVGForTopic(t.id);
+    // 知识点
+    const pointsHtml = t.points.map((p, i) => `
+      <div class="knowledge-card">
+        <div class="k-title"><span class="num">${i+1}</span> ${p.title}</div>
+        <div class="k-body">${p.body}</div>
+      </div>
+    `).join('');
+    // 练习
+    const quizHtml = t.quiz.map((q, qi) => `
+      <div class="quiz-card" data-topic="${t.id}" data-qi="${qi}">
+        <div class="q-text">${qi+1}. ${q.q}</div>
+        <div class="quiz-options">
+          ${q.opts.map((o, oi) => `<div class="quiz-opt" data-qi="${qi}" data-oi="${oi}" onclick="answerQuiz('${t.id}',${qi},${oi})">${o}</div>`).join('')}
+        </div>
+        <div class="quiz-result" id="qr-${t.id}-${qi}"></div>
+      </div>
+    `).join('');
+
+    return `
+      <div class="topic-content" id="page-${t.id}">
+        <h2>${t.icon} ${t.title} <small>${t.desc}</small></h2>
+        ${svgBlock}
+        ${pointsHtml}
+        <div class="quiz-section">
+          <h3>📝 章节练习</h3>
+          ${quizHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+  // 恢复已答状态
+  restoreQuizStates();
+}
+
+function getSVGForTopic(tid) {
+  const svgs = {
+    // 动物细胞 vs 植物细胞
+    topic0: `
+    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="max-height:200px;">
+      <style>
+        @keyframes floatP { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+        @keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+        .p-cell { animation: floatP 3s ease-in-out infinite; }
+        .a-cell { animation: floatA 3.5s ease-in-out infinite; }
+      </style>
+      <!-- 植物细胞 -->
+      <g class="p-cell">
+        <rect x="20" y="25" width="150" height="150" rx="20" fill="none" stroke="#43a047" stroke-width="3" stroke-dasharray="4"/>
+        <text x="25" y="20" fill="#388e3c" font-size="11">🌱 植物细胞</text>
+        <circle cx="95" cy="100" r="45" fill="#c8e6c9" opacity="0.6"/>
+        <circle cx="95" cy="100" r="20" fill="#fff" opacity="0.8" stroke="#a5d6a7" stroke-width="1.5"/>
+        <ellipse cx="75" cy="80" rx="8" ry="5" fill="#66bb6a" opacity="0.7"/>
+        <text x="55" y="78" font-size="9" fill="#2e7d32">叶绿体</text>
+        <line x1="95" y1="120" x2="95" y2="155" stroke="#888" stroke-width="0.8"/>
+        <rect x="80" y="155" width="30" height="8" rx="2" fill="#c8e6c9" opacity="0.6"/>
+        <text x="75" y="170" font-size="8" fill="#666">液泡</text>
+      </g>
+      <!-- 动物细胞 -->
+      <g class="a-cell">
+        <circle cx="290" cy="100" r="60" fill="#fce4ec" opacity="0.5" stroke="#e57373" stroke-width="2"/>
+        <text x="260" y="25" fill="#c62828" font-size="11">🐾 动物细胞</text>
+        <circle cx="290" cy="100" r="18" fill="#fff" opacity="0.7" stroke="#ef9a9a" stroke-width="1.5"/>
+        <text x="282" y="103" font-size="9" fill="#888">核</text>
+        <ellipse cx="270" cy="80" rx="6" ry="4" fill="#ffcdd2" opacity="0.7"/>
+        <ellipse cx="310" cy="85" rx="5" ry="3" fill="#ffcdd2" opacity="0.7"/>
+        <text x="255" y="72" font-size="8" fill="#888">线粒体</text>
+        <text x="305" y="82" font-size="8" fill="#888">线粒体</text>
+      </g>
+      <line x1="185" y1="30" x2="215" y2="30" stroke="#ccc" stroke-width="0.5"/>
+      <text x="188" y="190" font-size="10" fill="#999">细胞壁(外虚线) | 细胞膜(内实线) | 细胞核着色</text>
+    </svg>`,
+
+    // 食物链
+    topic1: `
+    <svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg" style="max-height:130px;">
+      <style>
+        @keyframes flowGlow { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
+        .flow-arrow { animation: flowGlow 2s ease infinite; }
+        .fc-item { animation: floatA 3s ease-in-out infinite; }
+      </style>
+      <g class="fc-item">
+        <text x="0" y="70" font-size="36">🌿</text>
+        <text x="10" y="95" font-size="10" fill="#666">草</text>
+      </g>
+      <g class="flow-arrow"><text x="55" y="70" font-size="24" fill="#43a047">→</text></g>
+      <g class="fc-item">
+        <text x="85" y="65" font-size="34">🦗</text>
+        <text x="95" y="95" font-size="10" fill="#666">蝗虫</text>
+      </g>
+      <g class="flow-arrow"><text x="135" y="70" font-size="24" fill="#43a047">→</text></g>
+      <g class="fc-item">
+        <text x="160" y="65" font-size="34">🐸</text>
+        <text x="170" y="95" font-size="10" fill="#666">青蛙</text>
+      </g>
+      <g class="flow-arrow"><text x="212" y="70" font-size="24" fill="#43a047">→</text></g>
+      <g class="fc-item">
+        <text x="240" y="68" font-size="32">🐍</text>
+        <text x="250" y="95" font-size="10" fill="#666">蛇</text>
+      </g>
+      <g class="flow-arrow"><text x="290" y="70" font-size="24" fill="#43a047">→</text></g>
+      <g class="fc-item">
+        <text x="318" y="65" font-size="36">🦅</text>
+        <text x="330" y="95" font-size="10" fill="#666">鹰</text>
+      </g>
+      <text x="140" y="118" font-size="10" fill="#999" text-anchor="middle">生产者 → 初级消费者 → 次级消费者 → 三级消费者 → 顶级消费者</text>
+      <text x="140" y="128" font-size="9" fill="#bbb" text-anchor="middle">能量沿箭头方向单向流动、逐级递减</text>
+    </svg>`,
+
+    // 人体消化
+    topic2: `
+    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="max-height:200px;">
+      <style>
+        @keyframes peristalsis { 0%{transform:translateY(0)} 50%{transform:translateY(-2px)} 100%{transform:translateY(0)} }
+        .gut { animation: peristalsis 3s ease infinite; }
+      </style>
+      <g class="gut">
+        <!-- 口腔 -->
+        <ellipse cx="200" cy="25" rx="40" ry="15" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+        <text x="200" y="22" font-size="10" fill="#e65100" text-anchor="middle">口腔</text>
+        <text x="200" y="34" font-size="8" fill="#777" text-anchor="middle">淀粉→麦芽糖</text>
+        <!-- 食管 -->
+        <path d="M200 40 L200 65" stroke="#a5d6a7" stroke-width="6" fill="none"/>
+        <!-- 胃 -->
+        <ellipse cx="200" cy="90" rx="35" ry="22" fill="#ffe0b2" stroke="#ff8f00" stroke-width="1.5"/>
+        <text x="200" y="88" font-size="10" fill="#e65100" text-anchor="middle">胃</text>
+        <text x="200" y="100" font-size="8" fill="#777" text-anchor="middle">蛋白质→</text>
+        <text x="200" y="110" font-size="8" fill="#777" text-anchor="middle">多肽/氨基酸</text>
+        <!-- 小肠 -->
+        <path d="M175 110 Q160 150 140 130 Q120 110 140 90" stroke="#81c784" stroke-width="3" fill="none"/>
+        <path d="M200 110 Q200 150 200 160" stroke="#81c784" stroke-width="3" fill="none"/>
+        <path d="M220 112 Q240 150 260 130 Q280 110 260 90" stroke="#81c784" stroke-width="3" fill="none"/>
+        <text x="200" y="175" font-size="10" fill="#2e7d32" text-anchor="middle">小肠 🏆 主要消化吸收器官</text>
+        <text x="200" y="188" font-size="8" fill="#999" text-anchor="middle">淀粉→葡萄糖 | 蛋白质→氨基酸 | 脂肪→甘油+脂肪酸</text>
+      </g>
+    </svg>`,
+
+    // DNA/遗传
+    topic3: `
+    <svg viewBox="0 0 360 160" xmlns="http://www.w3.org/2000/svg" style="max-height:160px;">
+      <style>
+        @keyframes helixSpin { 0%{stroke-opacity:0.4} 50%{stroke-opacity:1} 100%{stroke-opacity:0.4} }
+        .dnastrand { animation: helixSpin 4s ease infinite; stroke-dasharray:3 3; }
+      </style>
+      <!-- DNA 双螺旋示意 -->
+      <g transform="translate(40,10)">
+        <path d="M0 20 Q40 40,40 60 Q40 80,0 100 Q-40 120,-40 140" stroke="#43a047" stroke-width="3" fill="none" class="dnastrand"/>
+        <path d="M80 20 Q40 40,40 60 Q40 80,80 100 Q120 120,120 140" stroke="#2e7d32" stroke-width="3" fill="none" class="dnastrand"/>
+        <line x1="8" y1="35" x2="72" y2="35" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+        <line x1="36" y1="55" x2="44" y2="55" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+        <line x1="44" y1="75" x2="36" y2="75" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+        <line x1="8" y1="95" x2="72" y2="95" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+        <line x1="36" y1="115" x2="44" y2="115" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+        <line x1="44" y1="135" x2="36" y2="135" stroke="#a5d6a7" stroke-width="1.5" opacity="0.6"/>
+      </g>
+      <!-- 标注 -->
+      <text x="20" y="155" font-size="10" fill="#2e7d32">💡 染色体（DNA+蛋白质）→ 基因（DNA上有遗传效应的片段）</text>
+      <g transform="translate(200,20)">
+        <text x="0" y="20" font-size="10" fill="#c62828" font-weight="bold">显性 A</text>
+        <text x="70" y="20" font-size="10" fill="#1565c0" font-weight="bold">隐性 a</text>
+        <text x="0" y="45" font-size="9" fill="#666">AA   Aa   aa</text>
+        <text x="0" y="65" font-size="9" fill="#666">显性性状 = 3  : 1 = 隐性性状</text>
+        <text x="0" y="82" font-size="9" fill="#666">Aa × Aa → 子代比例 3:1</text>
+      </g>
+    </svg>`,
+
+    // 进化树
+    topic4: `
+    <svg viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" style="max-height:160px;">
+      <style>
+        @keyframes growUp { 0%{stroke-dashoffset:200} 100%{stroke-dashoffset:0} }
+        .evotree { stroke-dasharray:200; animation: growUp 3s ease forwards; }
+      </style>
+      <!-- 进化树 -->
+      <line x1="210" y1="140" x2="210" y2="20" stroke="#43a047" stroke-width="3" class="evotree"/>
+      <!-- 分支 -->
+      <line x1="210" y1="120" x2="40" y2="120" stroke="#81c784" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="90" x2="100" y2="90" stroke="#81c784" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="60" x2="155" y2="60" stroke="#81c784" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="60" x2="280" y2="60" stroke="#81c784" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="30" x2="320" y2="30" stroke="#81c784" stroke-width="2" class="evotree"/>
+      <text x="20" y="124" font-size="11">藻类</text>
+      <text x="80" y="94" font-size="11">苔藓</text>
+      <text x="130" y="64" font-size="11">蕨类</text>
+      <text x="260" y="64" font-size="11">裸子</text>
+      <text x="300" y="34" font-size="12" fill="#2e7d32" font-weight="bold">被子植物</text>
+      <text x="130" y="150" font-size="9" fill="#999">🌱 从简单到复杂，从水生到陆生</text>
+      <!-- 动物侧 -->
+      <line x1="210" y1="120" x2="370" y2="120" stroke="#e57373" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="90" x2="355" y2="90" stroke="#e57373" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="60" x2="340" y2="60" stroke="#e57373" stroke-width="2" class="evotree"/>
+      <line x1="210" y1="30" x2="370" y2="30" stroke="#e57373" stroke-width="2" class="evotree"/>
+      <text x="345" y="124" font-size="11">鱼类</text>
+      <text x="330" y="94" font-size="11">两栖类</text>
+      <text x="315" y="64" font-size="11">爬行类</text>
+      <text x="350" y="34" font-size="11">鸟/哺乳类</text>
+    </svg>`,
+
+    // 实验
+    topic5: `
+    <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg" style="max-height:120px;">
+      <style>
+        @keyframes bubbleRise { 0%{transform:translateY(0);opacity:0} 50%{opacity:0.8} 100%{transform:translateY(-15px);opacity:0} }
+        .bub { animation: bubbleRise 2s ease infinite; }
+        .bub2 { animation: bubbleRise 2s ease 0.7s infinite; }
+        .bub3 { animation: bubbleRise 2s ease 1.4s infinite; }
+      </style>
+      <!-- 试管 -->
+      <rect x="160" y="30" width="40" height="70" rx="5" fill="#e8f5e9" opacity="0.5" stroke="#81c784" stroke-width="2"/>
+      <rect x="150" y="15" width="60" height="18" rx="3" fill="#fff" stroke="#81c784" stroke-width="2"/>
+      <text x="180" y="28" font-size="10" fill="#555" text-anchor="middle">试管</text>
+      <text x="170" y="70" font-size="9" fill="#555">石灰水</text>
+      <!-- 气泡 -->
+      <circle cx="185" cy="65" r="4" fill="#a5d6a7" class="bub" opacity="0.6"/>
+      <circle cx="178" cy="70" r="3" fill="#a5d6a7" class="bub2" opacity="0.5"/>
+      <circle cx="192" cy="68" r="2.5" fill="#a5d6a7" class="bub3" opacity="0.5"/>
+      <!-- 碘液 -->
+      <ellipse cx="300" cy="60" rx="40" ry="30" fill="#fff9c4" opacity="0.4" stroke="#f9a825" stroke-width="1.5"/>
+      <text x="300" y="58" font-size="9" fill="#e65100" text-anchor="middle">碘液</text>
+      <text x="300" y="72" font-size="8" fill="#777" text-anchor="middle">遇淀粉→变蓝</text>
+      <!-- 酒精灯 -->
+      <rect x="30" y="65" width="35" height="25" rx="4" fill="#fff3e0" stroke="#ff8f00" stroke-width="1.5"/>
+      <ellipse cx="47" cy="65" rx="17" ry="4" fill="#ffe0b2" stroke="#ff8f00" stroke-width="1"/>
+      <text x="47" y="82" font-size="8" fill="#e65100" text-anchor="middle">酒精灯</text>
+      <text x="180" y="110" font-size="9" fill="#999" text-anchor="middle">🧪 单变量 + 对照组 + 重复实验 = 科学探究三原则</text>
+    </svg>`
+  };
+  return `<div class="svg-illustration">${svgs[tid] || ''}</div>`;
+}
+
+function restoreQuizStates() {
+  const p = getProgress();
+  TOPICS.forEach(t => {
+    const st = p[t.id];
+    if (!st || !st.answers) return;
+    (t.quiz || []).forEach((q, qi) => {
+      const ans = st.answers[qi];
+      if (ans === undefined || ans === null) return;
+      const card = document.querySelector(`.quiz-card[data-topic="${t.id}"][data-qi="${qi}"]`);
+      if (!card) return;
+      const opts = card.querySelectorAll('.quiz-opt');
+      opts.forEach(el => el.classList.add('disabled'));
+      const correct = ans === q.ans;
+      opts[q.ans].classList.add('correct');
+      if (!correct) opts[ans].classList.add('wrong');
+      const resultEl = document.getElementById(`qr-${t.id}-${qi}`);
+      if (resultEl) {
+        resultEl.className = `quiz-result show ${correct ? 'correct' : 'wrong'}`;
+        resultEl.textContent = correct ? '✅ 回答正确！' : `❌ 正确答案：${q.opts[q.ans]}`;
+      }
+    });
+  });
+}
+
+function updateTabsDots() {
+  document.querySelectorAll('.tab[data-tab]').forEach(el => {
+    const tid = el.dataset.tab;
+    if (tid === 'overview') return;
+    const st = topicState(tid);
+    const dot = el.querySelector('.dot');
+    if (!dot) return;
+    if (st.total === 0) dot.className = 'dot none';
+    else if (st.correct === st.total) dot.className = 'dot done';
+    else dot.className = 'dot partial';
+  });
+}
+
+function updateTotalScore() {
+  const tp = getTotalProgress();
+  document.getElementById('totalScore').textContent = tp.pct;
+}
+
+// ══════════════════════════════════════════
+//  交互
+// ══════════════════════════════════════════
+
+// 标签切换
+document.querySelectorAll('.tab').forEach(el => {
+  el.addEventListener('click', function() {
+    const tab = this.dataset.tab;
+    switchTab(tab);
+  });
+});
+
+function switchTab(tab) {
+  if (tab === 'practice') return;
+  // 隐藏综合练习
+  document.getElementById('practicePanel').classList.remove('active');
+  document.getElementById('practicePanel').style.display = 'none';
+  // 切换 tab active
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`)?.classList.add('active');
+  // 切换页面
+  document.querySelectorAll('.topic-content').forEach(el => el.classList.remove('active'));
+  const page = document.getElementById(`page-${tab}`);
+  if (page) page.classList.add('active');
+  // 总览特殊处理
+  document.getElementById('page-overview').classList.toggle('active', tab === 'overview');
+  // 滚动到顶
+  document.querySelector('.content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// 章节内答题
+function answerQuiz(tid, qi, oi) {
+  const p = getProgress();
+  const topic = TOPICS.find(t => t.id === tid);
+  if (!topic) return;
+  const st = topicState(tid);
+  if (st.answers && st.answers[qi] !== null && st.answers[qi] !== undefined) return; // 已答
+
+  const q = topic.quiz[qi];
+  const correct = oi === q.ans;
+
+  // UI
+  const card = document.querySelector(`.quiz-card[data-topic="${tid}"][data-qi="${qi}"]`);
+  if (!card) return;
+  const opts = card.querySelectorAll('.quiz-opt');
+  opts.forEach(el => el.classList.add('disabled'));
+  opts[q.ans].classList.add('correct');
+  if (!correct) opts[oi].classList.add('wrong');
+
+  const resultEl = document.getElementById(`qr-${tid}-${qi}`);
+  if (resultEl) {
+    resultEl.className = `quiz-result show ${correct ? 'correct' : 'wrong'}`;
+    resultEl.textContent = correct ? '✅ 回答正确！很棒！' : `❌ 再想想哦！正确答案：${q.opts[q.ans]}`;
+  }
+
+  // 更新进度
+  const answers = st.answers || [];
+  answers[qi] = oi;
+  let correctCount = 0, totalCount = topic.quiz.length;
+  topic.quiz.forEach((_, idx) => {
+    if (answers[idx] !== null && answers[idx] !== undefined && answers[idx] === topic.quiz[idx].ans) correctCount++;
+  });
+  updateTopicProgress(tid, correctCount, totalCount, answers);
+}
+
+// ══════════════════════════════════════════
+//  综合练习
+// ══════════════════════════════════════════
+
+let practiceQuestions = [];
+let practiceIdx = 0;
+let practiceCorrect = 0;
+let practiceAnswered = false;
+
+function startPractice() {
+  // 收集所有未答或者全部重新来
+  const allQ = [];
+  TOPICS.forEach(t => {
+    (t.quiz || []).forEach((q, qi) => {
+      allQ.push({ ...q, tid: t.id, qi });
+    });
+  });
+  // 打乱
+  for (let i = allQ.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allQ[i], allQ[j]] = [allQ[j], allQ[i]];
+  }
+  practiceQuestions = allQ;
+  practiceIdx = 0;
+  practiceCorrect = 0;
+  practiceAnswered = false;
+
+  // 切换显示
+  document.querySelectorAll('.topic-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-overview').classList.remove('active');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+  const panel = document.getElementById('practicePanel');
+  panel.classList.add('active');
+  panel.style.display = 'block';
+
+  renderPracticeQuestion();
+}
+
+function renderPracticeQuestion() {
+  const total = practiceQuestions.length;
+  const idx = practiceIdx;
+  if (idx >= total) {
+    document.getElementById('practiceContent').innerHTML = `
+      <div class="empty-state">
+        <div class="big-icon">🎉</div>
+        <h3 style="color:#2e7d32;margin-bottom:8px;">综合练习完成！</h3>
+        <p style="font-size:16px;">答对 <strong style="color:#2e7d32;font-size:24px;">${practiceCorrect}</strong> / ${total} 题</p>
+        <p style="margin-top:12px;color:#888;">掌握率 ${Math.round(practiceCorrect/total*100)}%</p>
+        <button class="anim-btn" onclick="startPractice()" style="margin-top:16px;padding:10px 28px;">🔄 再来一次</button>
+        <button class="back-btn" onclick="exitPractice()" style="margin-top:10px;display:inline-block;margin-left:10px;">返回总览</button>
+      </div>
+    `;
+    document.getElementById('pCur').textContent = total;
+    document.getElementById('pTotal').textContent = total;
+    document.getElementById('pFill').style.width = '100%';
+    document.getElementById('pScoreDisplay').textContent = `✅ ${practiceCorrect}`;
+    return;
+  }
+
+  const q = practiceQuestions[idx];
+  document.getElementById('pCur').textContent = idx + 1;
+  document.getElementById('pTotal').textContent = total;
+  document.getElementById('pFill').style.width = `${(idx/total)*100}%`;
+  document.getElementById('pScoreDisplay').textContent = `✅ ${practiceCorrect}`;
+  practiceAnswered = false;
+
+  // 找到专题名称
+  const topic = TOPICS.find(t => t.id === q.tid);
+  const topicLabel = topic ? `${topic.icon} ${topic.title}` : '';
+
+  document.getElementById('practiceContent').innerHTML = `
+    <div class="quiz-card">
+      <div class="q-text" style="margin-bottom:16px;">
+        <span style="font-size:12px;color:#999;display:block;margin-bottom:4px;">${topicLabel}</span>
+        <strong>${q.q}</strong>
+      </div>
+      <div class="quiz-options" id="practiceOptions">
+        ${q.opts.map((o, oi) => `<div class="quiz-opt" data-oi="${oi}" onclick="answerPractice(${oi})">${o}</div>`).join('')}
+      </div>
+      <div class="quiz-result" id="practiceResult"></div>
+      <div style="margin-top:12px;text-align:right;">
+        <button class="back-btn" id="nextBtn" onclick="nextPractice()" style="display:none;padding:8px 24px;background:#43a047;color:#fff;border:none;">下一题 →</button>
+      </div>
+    </div>
+  `;
+}
+
+function answerPractice(oi) {
+  if (practiceAnswered) return;
+  practiceAnswered = true;
+  const q = practiceQuestions[practiceIdx];
+  const correct = oi === q.ans;
+
+  const opts = document.querySelectorAll('#practiceOptions .quiz-opt');
+  opts.forEach(el => el.classList.add('disabled'));
+  opts[q.ans].classList.add('correct');
+  if (!correct) opts[oi].classList.add('wrong');
+
+  const resultEl = document.getElementById('practiceResult');
+  if (resultEl) {
+    resultEl.className = `quiz-result show ${correct ? 'correct' : 'wrong'}`;
+    resultEl.textContent = correct ? '✅ 回答正确！' : `❌ 正确答案：${q.opts[q.ans]}`;
+  }
+
+  if (correct) practiceCorrect++;
+
+  // 更新对应专题进度
+  const p = getProgress();
+  const st = topicState(q.tid);
+  const topic = TOPICS.find(t => t.id === q.tid);
+  if (topic) {
+    const answers = st.answers || [];
+    answers[q.qi] = oi;
+    let cc = 0, tt = topic.quiz.length;
+    topic.quiz.forEach((_, idx) => {
+      if (answers[idx] !== null && answers[idx] !== undefined && answers[idx] === topic.quiz[idx].ans) cc++;
+    });
+    updateTopicProgress(q.tid, cc, tt, answers);
+  }
+
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('practiceResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function nextPractice() {
+  practiceIdx++;
+  renderPracticeQuestion();
+}
+
+function exitPractice() {
+  document.getElementById('practicePanel').classList.remove('active');
+  document.getElementById('practicePanel').style.display = 'none';
+  switchTab('overview');
+}
+
+// 重新学习：清除所有进度
+function resetAll() {
+  if (!confirm('确定要清除所有学习进度吗？\n所有答题记录将被清空，可重新学习。')) return;
+  try { localStorage.removeItem('bioReviewProgress'); } catch(e) {}
+  // 重置综合练习状态
+  practiceIdx = 0;
+  practiceCorrect = 0;
+  practiceAnswered = false;
+  practiceQuestions = [];
+  // 重新渲染
+  renderAll();
+  switchTab('overview');
+}
+
+// ══════════════════════════════════════════
+//  初始化
+// ══════════════════════════════════════════
+
+renderAll();
+// 给 overview 页面也做一个加载动画效果
+document.querySelectorAll('.overview-card').forEach((el, i) => {
+  el.style.animation = `fadeIn 0.5s ease ${i*0.08}s both`;
+});
+</script>
+</body>
+</html>
